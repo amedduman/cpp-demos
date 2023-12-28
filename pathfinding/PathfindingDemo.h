@@ -17,9 +17,12 @@ struct Tile
         shape.setSize(sf::Vector2f(in_width - 1, in_height - 1));
         shape.setPosition(pos.x, pos.y);
 
+        std::get<0>(tileNum) = in_horizontalRank;
+        std::get<1>(tileNum) = in_verticalRank;
+
         tileNumberText = sf::Text();
         tileNumberText.setFont(font);
-        tileNumberText.setString(std::to_string(in_horizontalRank) + ", " + std::to_string(in_verticalRank));
+        tileNumberText.setString(std::to_string(std::get<0>(tileNum)) + ", " + std::to_string(std::get<1>(tileNum)));
         tileNumberText.setCharacterSize(16);
         tileNumberText.setPosition(pos.x, pos.y);
         tileNumberText.setFillColor(sf::Color::White);
@@ -33,6 +36,11 @@ struct Tile
     const sf::Text& GetText()
     {
         return tileNumberText;
+    }
+
+    const std::tuple<int,int>& GetTileNum()
+    {
+        return tileNum;
     }
 
     bool IsTileIncludePoint(const sf::Vector2i& point) const
@@ -65,6 +73,7 @@ private:
     int width;
     int height;
     bool isBlocked = false;
+    std::tuple<int,int> tileNum;
 };
 
 class PathfindingDemo
@@ -213,10 +222,9 @@ private:
             if(tiles[i].IsTileIncludePoint(mousePos))
             {
                 if(tiles[i].IsBlocked()) return;
+                
+                std::cout << std::get<0>(tiles[i].GetTileNum()) << std::endl;
             }
         }
-
-
-
     }
 };
