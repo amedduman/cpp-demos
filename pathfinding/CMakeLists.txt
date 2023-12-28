@@ -4,7 +4,7 @@ project(pathfinding)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(pathfinding main.cpp
-        demo.h)
+        PathfindingDemo.h)
 
 find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
 target_link_libraries(pathfinding sfml-window sfml-graphics)
