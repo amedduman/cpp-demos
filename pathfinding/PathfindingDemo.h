@@ -1,32 +1,67 @@
 #pragma once
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 struct Tile
 {
-public:
-    sf::RectangleShape shape;
-
     Tile(int in_width, int in_height, int in_horizontalRank, int in_verticalRank)
     {
+        pos = sf::Vector2i(in_horizontalRank * in_width, in_verticalRank * in_height);
+        width = in_width;
+        height = in_height;
+
         shape = sf::RectangleShape();
         shape.setFillColor(sf::Color::Transparent);
         shape.setOutlineThickness(1);
         shape.setOutlineColor(sf::Color::White);
-        shape.setSize(sf::Vector2f(in_width, in_height));
-        shape.setPosition(in_horizontalRank * in_width, in_verticalRank * in_height);
+        shape.setSize(sf::Vector2f(in_width - 1, in_height - 1));
+        shape.setPosition(pos.x, pos.y);
     }
+
+    const sf::RectangleShape& GetShape()
+    {
+        return shape;
+    }
+
+    bool IsTileIncludePoint(const sf::Vector2i& point) const
+    {
+        return point.x >= pos.x && point.x <= pos.x + width &&
+               point.y >= pos.y && point.y <= pos.y + height;
+    }
+
+    void AddBlock()
+    {
+        isBlocked = true;
+        shape.setFillColor(sf::Color(0,100,100));
+    }
+
+    void RemoveBlock()
+    {
+        isBlocked = false;
+        shape.setFillColor(sf::Color::Transparent);
+    }
+
+    bool IsBlocked() const
+    {
+        return isBlocked;
+    }
+
 private:
-    sf::Vector2<int> pos;
+    sf::RectangleShape shape;
+    sf::Vector2i pos;
+    int width;
+    int height;
+    bool isBlocked = false;
 };
 
 class PathfindingDemo
 {
 public:
-    sf::RenderWindow m_window;
+    sf::RenderWindow window;
     std::vector<Tile> tiles;
 
     PathfindingDemo()
-        :m_window(sf::VideoMode(800, 600), "My window")
+        :window(sf::VideoMode(800, 600), "My window")
     {
         int width = 50;
         int height = 50;
@@ -43,7 +78,7 @@ public:
 
     void Run()
     {
-        while (m_window.isOpen())
+        while (window.isOpen())
         {
             Input();
             Render();
@@ -53,25 +88,42 @@ private:
     void Input()
     {
         sf::Event event {};
-        while (m_window.pollEvent(event))
+        while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
-                m_window.close();
+                window.close();
             if (event.type == sf::Event::KeyPressed)
             {
                 if(event.key.code == sf::Keyboard::Escape)
                 {
-                    m_window.close();
+                    window.close();
                 }
                 if(event.key.code == sf::Keyboard::Escape)
                 {
-                    m_window.close();
+                    window.close();
                 }
                 if(event.key.code == sf::Keyboard::Space)
                 {
+                    std::cout << "pressed" << std::endl;
                 }
             }
             if (event.type == sf::Event::KeyReleased)
+            {
+
+            }
+
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    PutBlock();
+                }
+                if (event.mouseButton.button == sf::Mouse::Right)
+                {
+                    RemoveBlock();
+                }
+            }
+            if (event.type == sf::Event::MouseButtonReleased)
             {
 
             }
@@ -79,13 +131,43 @@ private:
     }
     void Render()
     {
-        m_window.clear(sf::Color(25, 35,25));
+        window.clear(sf::Color(25, 35,25));
 
         for (auto& t : tiles)
         {
-            m_window.draw(t.shape);
+            window.draw(t.GetShape());
         }
 
-        m_window.display();
+        window.display();
+    }
+
+    void PutBlock()
+    {
+        const auto mousePos = sf::Mouse::getPosition(window);
+
+        for(auto& t : tiles)
+        {
+            if(t.IsTileIncludePoint(mousePos))
+            {
+                if(t.IsBlocked()) break;
+                t.AddBlock();
+                break;
+            }
+        }
+    }
+
+    void RemoveBlock()
+    {
+        const auto mousePos = sf::Mouse::getPosition(window);
+
+        for(auto& t : tiles)
+        {
+            if(t.IsTileIncludePoint(mousePos))
+            {
+                if(t.IsBlocked() == false) break;
+                t.RemoveBlock();
+                break;
+            }
+        }
     }
 };
