@@ -4,7 +4,7 @@
 
 struct Tile
 {
-    Tile(int in_width, int in_height, int in_horizontalRank, int in_verticalRank)
+    Tile(const int in_width, const int in_height, const int in_horizontalRank, const int in_verticalRank, const sf::Font& font)
     {
         pos = sf::Vector2i(in_horizontalRank * in_width, in_verticalRank * in_height);
         width = in_width;
@@ -16,11 +16,23 @@ struct Tile
         shape.setOutlineColor(sf::Color::White);
         shape.setSize(sf::Vector2f(in_width - 1, in_height - 1));
         shape.setPosition(pos.x, pos.y);
+
+        tileNumberText = sf::Text();
+        tileNumberText.setFont(font);
+        tileNumberText.setString(std::to_string(in_horizontalRank) + ", " + std::to_string(in_verticalRank));
+        tileNumberText.setCharacterSize(16);
+        tileNumberText.setPosition(pos.x, pos.y);
+        tileNumberText.setFillColor(sf::Color::White);
     }
 
     const sf::RectangleShape& GetShape()
     {
         return shape;
+    }
+
+    const sf::Text& GetText()
+    {
+        return tileNumberText;
     }
 
     bool IsTileIncludePoint(const sf::Vector2i& point) const
@@ -48,6 +60,7 @@ struct Tile
 
 private:
     sf::RectangleShape shape;
+    sf::Text tileNumberText;
     sf::Vector2i pos;
     int width;
     int height;
@@ -59,6 +72,8 @@ class PathfindingDemo
 public:
     sf::RenderWindow window;
     std::vector<Tile> tiles;
+    bool isShiftPressed = false;
+    sf::Font font;
 
     PathfindingDemo()
         :window(sf::VideoMode(800, 600), "My window")
@@ -66,11 +81,16 @@ public:
         int width = 50;
         int height = 50;
 
+        if (!font.loadFromFile("../play.ttf"))
+        {
+            std::cout << "can't load font" << std::endl;
+        }
+
         for (int v = 0; v < 600/height; ++v)
         {
             for (int h = 0; h < 800/width; ++h)
             {
-                auto t = Tile(width,height, h, v);
+                auto t = Tile(width,height, h, v, font);
                 tiles.push_back(t);
             }
         }
@@ -102,21 +122,31 @@ private:
                 {
                     window.close();
                 }
-                if(event.key.code == sf::Keyboard::Space)
+                if(event.key.code == sf::Keyboard::LShift)
                 {
-                    std::cout << "pressed" << std::endl;
+                    isShiftPressed = true;
                 }
             }
             if (event.type == sf::Event::KeyReleased)
             {
-
+                if(event.key.code == sf::Keyboard::LShift)
+                {
+                    isShiftPressed = false;
+                }
             }
 
             if (event.type == sf::Event::MouseButtonPressed)
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    PutBlock();
+                    if (isShiftPressed)
+                    {
+                        PutBlock();
+                    }
+                    else
+                    {
+                        DetectNeighbours();
+                    }
                 }
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
@@ -136,6 +166,7 @@ private:
         for (auto& t : tiles)
         {
             window.draw(t.GetShape());
+            window.draw(t.GetText());
         }
 
         window.display();
@@ -169,5 +200,23 @@ private:
                 break;
             }
         }
+    }
+
+    void DetectNeighbours()
+    {
+        std::vector<Tile> neighbourTiles;
+        int tileIndex = 0;
+
+        const auto mousePos = sf::Mouse::getPosition(window);
+        for (int i = 0; i < tiles.size(); ++i)
+        {
+            if(tiles[i].IsTileIncludePoint(mousePos))
+            {
+                if(tiles[i].IsBlocked()) return;
+            }
+        }
+
+
+
     }
 };
