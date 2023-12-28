@@ -38,9 +38,11 @@ struct Tile
         return tileNumberText;
     }
 
-    const std::tuple<int,int>& GetTileNum()
+    sf::Vector2i GetTileNum() const
     {
-        return tileNum;
+        const int w = std::get<0>(tileNum);
+        const int h = std::get<1>(tileNum);
+        return {w,h};
     }
 
     bool IsTileIncludePoint(const sf::Vector2i& point) const
@@ -83,13 +85,12 @@ public:
     std::vector<Tile> tiles;
     bool isShiftPressed = false;
     sf::Font font;
+    int width = 50;
+    int height = 50;
 
     PathfindingDemo()
         :window(sf::VideoMode(800, 600), "My window")
     {
-        int width = 50;
-        int height = 50;
-
         if (!font.loadFromFile("../play.ttf"))
         {
             std::cout << "can't load font" << std::endl;
@@ -213,18 +214,42 @@ private:
 
     void DetectNeighbours()
     {
-        std::vector<Tile> neighbourTiles;
-        int tileIndex = 0;
+        std::vector<Tile*> neighbourTiles;
+
+        neighbourTiles.push_back(&tiles[0]);
+        neighbourTiles.push_back(&tiles[1]);
 
         const auto mousePos = sf::Mouse::getPosition(window);
-        for (int i = 0; i < tiles.size(); ++i)
+        for (const auto & tile : tiles)
         {
-            if(tiles[i].IsTileIncludePoint(mousePos))
+            if(tile.IsTileIncludePoint(mousePos))
             {
-                if(tiles[i].IsBlocked()) return;
-                
-                std::cout << std::get<0>(tiles[i].GetTileNum()) << std::endl;
+                if(tile.IsBlocked()) return;
+
+                const auto w = tile.GetTileNum().x;
+                const auto h = tile.GetTileNum().y;
+
+                const auto r = GetTileAt(w + 1, h    );
+                const auto l = GetTileAt(w - 1, h    );
+                const auto u = GetTileAt(w    , h + 1);
+                const auto d = GetTileAt(w    , h - 1);
+
+                if(r != nullptr) r->AddBlock();
+                if(l != nullptr) l->AddBlock();
+                if(u != nullptr) u->AddBlock();
+                if(d != nullptr) d->AddBlock();
             }
         }
+    }
+
+    Tile* GetTileAt(const int w, const int h)
+    {
+        for(auto& t : tiles)
+        {
+            if(t.GetTileNum().x == w && t.GetTileNum().y == h)
+                return &t;
+        }
+
+        return nullptr;
     }
 };
