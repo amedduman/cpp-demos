@@ -178,6 +178,7 @@ public:
     std::vector<Tile*> path;
     Mover mover;
     int curentFrame = 0;
+    Tile* currentDestination;
 
 
     PathfindingDemo()
@@ -200,6 +201,8 @@ public:
         }
 
         mover = Mover(&tiles[40]);
+
+        currentDestination = nullptr;
     }
 
     void Run()
@@ -219,6 +222,7 @@ public:
                     {
                         ResetTileColors();
                         path.clear();
+                        currentDestination = nullptr;
                     }
                 }
             }
@@ -268,11 +272,17 @@ private:
                     if (isShiftPressed)
                     {
                         PutBlock();
+                        if (currentDestination)
+                        {
+                            CalculateTileValues(mover.GetTile(), currentDestination);
+                            TryFindPath(mover.GetTile(), currentDestination);
+                        }
                     }
                     else
                     {
-                        CalculateTileValues(mover.GetTile(), GetTileUnderCursor());
-                        TryFindPath(mover.GetTile(), GetTileUnderCursor());
+                        currentDestination = GetTileUnderCursor();
+                        CalculateTileValues(mover.GetTile(), currentDestination);
+                        TryFindPath(mover.GetTile(), currentDestination);
                     }
                 }
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -475,6 +485,17 @@ private:
                 return false;
             }
 
+            // if nearest tile is a tile that is already included in path it means we can't find any new tile whic means path is blocked. so there is no path from start to end
+            for(auto p : path)
+            {
+                if(p == nearestTile)
+                {
+                    path.clear();
+                    ResetTileColors();
+                    return false;
+                }
+            }
+
             path.push_back(nearestTile);
 
             if (nearestTile == endTile)
@@ -483,6 +504,7 @@ private:
             }
 
             nearestTile->ColorTile(sf::Color(100,100,100));
+            std::cout << nearestTile->GetTileNum().x << ", " << nearestTile->GetTileNum().y << std::endl;
 
             currentTile = nearestTile;
         }
