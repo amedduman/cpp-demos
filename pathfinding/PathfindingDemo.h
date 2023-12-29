@@ -75,12 +75,14 @@ struct Tile
     void AddBlock()
     {
         value = -1;
+        valueText.setString(std::to_string(value));
         shape.setFillColor(sf::Color(0,100,100));
     }
 
     void RemoveBlock()
     {
         value = 0;
+        valueText.setString(std::to_string(value));
         shape.setFillColor(sf::Color::Transparent);
     }
 
@@ -198,11 +200,11 @@ private:
                 {
                     if (isShiftPressed)
                     {
-                        PutBlock();
+                        DetectNeighbours();
                     }
                     else
                     {
-                        DetectNeighbours();
+                        PutBlock();
                     }
                 }
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -320,6 +322,8 @@ private:
 
     void FindPath(Tile* endTile, Tile* startTile)
     {
+        startTile->ColorTile(sf::Color::Green);
+        endTile->ColorTile(sf::Color::Red);
         int value = 1;
         bool hasReached = false;
 
@@ -354,8 +358,8 @@ private:
             newlyDiscoveredTiles.clear();
             value++;
 
-            if (value == 4)
-                hasReached = true;
+            // if (value == 4)
+            //     hasReached = true;
         }
     }
 };
