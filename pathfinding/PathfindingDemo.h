@@ -123,6 +123,40 @@ private:
     int value;
 };
 
+class Mover
+{
+public:
+    Mover() = default;
+    explicit Mover(Tile* in_tile)
+    {
+        myTile = in_tile;
+        shape.setRadius(20);
+        shape.setPosition(in_tile->GetShape().getPosition());
+        currentIndexInPath = -1;
+    }
+    void Move(std::vector<Tile*>& path)
+    {
+        if(path.size() <= 0) return;
+        currentIndexInPath++;
+        if(currentIndexInPath >= path.size()) return;
+        const auto tile = path[currentIndexInPath];
+        myTile = tile;
+        shape.setPosition(tile->GetShape().getPosition());
+    }
+    Tile* GetTile() const
+    {
+        return myTile;
+    }
+    const sf::CircleShape& GetShape()
+    {
+        return shape;
+    }
+private:
+    Tile* myTile;
+    sf::CircleShape shape;
+    int currentIndexInPath;
+};
+
 class PathfindingDemo
 {
 public:
@@ -132,10 +166,16 @@ public:
     sf::Font font;
     int width = 50;
     int height = 50;
+    std::vector<Tile*> path;
+    Mover mover;
+    int curentFrame = 0;
+
 
     PathfindingDemo()
         :window(sf::VideoMode(800, 600), "My window")
     {
+        window.setFramerateLimit(60);
+
         if (!font.loadFromFile("../play.ttf"))
         {
             std::cout << "can't load font" << std::endl;
@@ -149,6 +189,8 @@ public:
                 tiles.push_back(t);
             }
         }
+
+        mover = Mover(&tiles[0]);
     }
 
     void Run()
@@ -157,6 +199,11 @@ public:
         {
             Input();
             Render();
+
+            if(curentFrame %5 == 0)
+                mover.Move(path);
+
+            curentFrame++;
         }
     }
 private:
@@ -200,11 +247,12 @@ private:
                 {
                     if (isShiftPressed)
                     {
-                        DetectNeighbours();
+                        PutBlock();
                     }
                     else
                     {
-                        PutBlock();
+                        CalculateTileValues(GetTileUnderCursor(), mover.GetTile());
+                        TryFindPath(GetTileUnderCursor(), mover.GetTile());
                     }
                 }
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -229,6 +277,8 @@ private:
             window.draw(t.GetTileNumText());
             window.draw(t.GetTileValueText());
         }
+
+        window.draw(mover.GetShape());
 
         window.display();
     }
@@ -261,6 +311,20 @@ private:
                 break;
             }
         }
+    }
+
+    Tile* GetTileUnderCursor()
+    {
+        const auto mousePos = sf::Mouse::getPosition(window);
+        for (auto & tile : tiles)
+        {
+            if(tile.IsTileIncludePoint(mousePos))
+            {
+                return &tile;
+            }
+        }
+
+        return nullptr;
     }
 
     void DetectNeighbours()
@@ -320,7 +384,7 @@ private:
         return nullptr;
     }
 
-    void CalculateTileValues(Tile* endTile, Tile* startTile)
+    void CalculateTileValues(Tile* startTile, Tile* endTile)
     {
         for (auto& t : tiles)
         {
@@ -331,14 +395,13 @@ private:
         startTile->ColorTile(sf::Color::Green);
         endTile->ColorTile(sf::Color::Red);
         int value = 1;
-        bool hasReached = false;
 
         std::set<Tile*> processingTiles;
         std::set<Tile*> newlyDiscoveredTiles;
 
         processingTiles.insert(endTile);
 
-        while (hasReached == false)
+        while (true)
         {
             for (auto t : processingTiles)
             {
@@ -361,21 +424,18 @@ private:
             newlyDiscoveredTiles.clear();
             value++;
         }
-
-        FindPath(startTile, endTile);
     }
 
-    void FindPath(Tile* startTile, Tile* endTile)
+    bool TryFindPath(const Tile* startTile, const Tile* endTile)
     {
         bool hasDone = false;
-        Tile* currentTile;
-        currentTile = startTile;
+        const Tile* currentTile = startTile;
         int iterationCount = 0;
         while (hasDone == false)
         {
             int lowestValue = 9999;
             Tile* nearestTile = nullptr;
-            for (auto nt : DetectNeighbours(*currentTile))
+            for (const auto nt : DetectNeighbours(*currentTile))
             {
                 if(nt->GetValue() < lowestValue && nt->IsBlocked() == false)
                 {
@@ -384,10 +444,22 @@ private:
                 }
             }
 
-            if(nearestTile == nullptr) break;
-            nearestTile->ColorTile(sf::Color(100,100,100));
-            if (nearestTile == endTile)
+            if(nearestTile == nullptr)
+            {
+                path.clear();
+                return true;
                 break;
+            }
+
+            path.push_back(nearestTile);
+
+            if (nearestTile == endTile)
+            {
+                return false;
+                break;
+            }
+
+            // nearestTile->ColorTile(sf::Color(100,100,100));
             currentTile = nearestTile;
 
             iterationCount++;
@@ -397,5 +469,6 @@ private:
                 hasDone = true;
             }
         }
+        return false;
     }
 };
