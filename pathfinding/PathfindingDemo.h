@@ -72,6 +72,11 @@ struct Tile
         shape.setFillColor(color);
     }
 
+    void ResetTileColor()
+    {
+        shape.setFillColor(sf::Color::Transparent);
+    }
+
     void AddBlock()
     {
         value = -1;
@@ -204,8 +209,19 @@ public:
             Input();
             Render();
 
-            if(curentFrame %5 == 0)
+            if(curentFrame %10 == 0)
+            {
                 mover.Move(path);
+                int index = path.size() - 1;
+                if (index >= 0)
+                {
+                    if(path[path.size()-1] == mover.GetTile())
+                    {
+                        ResetTileColors();
+                        path.clear();
+                    }
+                }
+            }
 
             curentFrame++;
         }
@@ -396,8 +412,6 @@ private:
             t.SetValue(0);
         }
 
-        startTile->ColorTile(sf::Color::Green);
-        endTile->ColorTile(sf::Color::Red);
         int value = 1;
 
         std::set<Tile*> processingTiles;
@@ -430,14 +444,19 @@ private:
         }
     }
 
-    bool TryFindPath(const Tile* startTile, const Tile* endTile)
+    bool TryFindPath(Tile* startTile, Tile* endTile)
     {
+        ResetTileColors();
+
+        startTile->ColorTile(sf::Color::Green);
+        endTile->ColorTile(sf::Color::Red);
+
         mover.ResetPath();
         path.clear();
-        bool hasDone = false;
+
         const Tile* currentTile = startTile;
-        int iterationCount = 0;
-        while (hasDone == false)
+
+        while (true)
         {
             int lowestValue = 9999;
             Tile* nearestTile = nullptr;
@@ -453,28 +472,28 @@ private:
             if(nearestTile == nullptr)
             {
                 path.clear();
-                return true;
-                break;
+                return false;
             }
 
             path.push_back(nearestTile);
 
             if (nearestTile == endTile)
             {
-                return false;
-                break;
+                return true;
             }
 
-            // nearestTile->ColorTile(sf::Color(100,100,100));
+            nearestTile->ColorTile(sf::Color(100,100,100));
+
             currentTile = nearestTile;
-
-            iterationCount++;
-            if (iterationCount > 1000)
-            {
-                std::cout << "while loop end manually" << std::endl;
-                hasDone = true;
-            }
         }
-        return false;
+    }
+
+    void ResetTileColors()
+    {
+        for(auto& t : tiles)
+        {
+            if(t.IsBlocked() == false)
+                t.ResetTileColor();
+        }
     }
 };
