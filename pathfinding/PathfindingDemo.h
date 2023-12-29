@@ -288,6 +288,11 @@ private:
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
                     RemoveBlock();
+                    if (currentDestination)
+                    {
+                        CalculateTileValues(mover.GetTile(), currentDestination);
+                        TryFindPath(mover.GetTile(), currentDestination);
+                    }
                 }
             }
             if (event.type == sf::Event::MouseButtonReleased)
@@ -482,6 +487,8 @@ private:
             if(nearestTile == nullptr)
             {
                 path.clear();
+                currentDestination = nullptr;
+                ResetTileColors();
                 return false;
             }
 
@@ -491,6 +498,7 @@ private:
                 if(p == nearestTile)
                 {
                     path.clear();
+                    currentDestination = nullptr;
                     ResetTileColors();
                     return false;
                 }
