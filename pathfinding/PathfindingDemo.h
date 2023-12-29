@@ -130,8 +130,12 @@ public:
     explicit Mover(Tile* in_tile)
     {
         myTile = in_tile;
-        shape.setRadius(20);
+        shape.setRadius(25);
         shape.setPosition(in_tile->GetShape().getPosition());
+        currentIndexInPath = -1;
+    }
+    void ResetPath()
+    {
         currentIndexInPath = -1;
     }
     void Move(std::vector<Tile*>& path)
@@ -190,7 +194,7 @@ public:
             }
         }
 
-        mover = Mover(&tiles[0]);
+        mover = Mover(&tiles[40]);
     }
 
     void Run()
@@ -251,8 +255,8 @@ private:
                     }
                     else
                     {
-                        CalculateTileValues(GetTileUnderCursor(), mover.GetTile());
-                        TryFindPath(GetTileUnderCursor(), mover.GetTile());
+                        CalculateTileValues(mover.GetTile(), GetTileUnderCursor());
+                        TryFindPath(mover.GetTile(), GetTileUnderCursor());
                     }
                 }
                 if (event.mouseButton.button == sf::Mouse::Right)
@@ -428,6 +432,8 @@ private:
 
     bool TryFindPath(const Tile* startTile, const Tile* endTile)
     {
+        mover.ResetPath();
+        path.clear();
         bool hasDone = false;
         const Tile* currentTile = startTile;
         int iterationCount = 0;
