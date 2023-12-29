@@ -183,7 +183,7 @@ private:
                 }
                 if(event.key.code == sf::Keyboard::Space)
                 {
-                    FindPath(&tiles[0], &tiles[30]);
+                    CalculateTileValues(&tiles[0], &tiles[30]);
                 }
             }
             if (event.type == sf::Event::KeyReleased)
@@ -320,7 +320,7 @@ private:
         return nullptr;
     }
 
-    void FindPath(Tile* endTile, Tile* startTile)
+    void CalculateTileValues(Tile* endTile, Tile* startTile)
     {
         startTile->ColorTile(sf::Color::Green);
         endTile->ColorTile(sf::Color::Red);
@@ -336,12 +336,6 @@ private:
         {
             for (auto t : processingTiles)
             {
-                // if(t == startTile)
-                // {
-                //     hasReached = true;
-                //     break;
-                // }
-
                 t->SetValue(value);
 
                 for (auto nt : DetectNeighbours(*t))
@@ -360,9 +354,42 @@ private:
             processingTiles = newlyDiscoveredTiles;
             newlyDiscoveredTiles.clear();
             value++;
+        }
 
-            // if (value == 4)
-            //     hasReached = true;
+        FindPath(startTile, endTile);
+    }
+
+    void FindPath(Tile* startTile, Tile* endTile)
+    {
+        bool hasDone = false;
+        Tile* currentTile;
+        currentTile = startTile;
+        int iterationCount = 0;
+        while (hasDone == false)
+        {
+            int lowestValue = 9999;
+            Tile* nearestTile = nullptr;
+            for (auto nt : DetectNeighbours(*currentTile))
+            {
+                if(nt->GetValue() < lowestValue && nt->IsBlocked() == false)
+                {
+                    lowestValue = nt->GetValue();
+                    nearestTile = nt;
+                }
+            }
+
+            if(nearestTile == nullptr) break;
+            nearestTile->ColorTile(sf::Color(100,100,100));
+            if (nearestTile == endTile)
+                break;
+            currentTile = nearestTile;
+
+            iterationCount++;
+            if (iterationCount > 1000)
+            {
+                std::cout << "while loop end manually" << std::endl;
+                hasDone = true;
+            }
         }
     }
 };
