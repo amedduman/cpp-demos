@@ -322,6 +322,12 @@ private:
 
     void CalculateTileValues(Tile* endTile, Tile* startTile)
     {
+        for (auto& t : tiles)
+        {
+            if(t.IsBlocked()) continue;
+            t.SetValue(0);
+        }
+
         startTile->ColorTile(sf::Color::Green);
         endTile->ColorTile(sf::Color::Red);
         int value = 1;
