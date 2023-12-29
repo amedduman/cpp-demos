@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <set>
 
 struct Tile
 {
@@ -27,9 +28,11 @@ struct Tile
         tileNumberText.setPosition(pos.x, pos.y);
         tileNumberText.setFillColor(sf::Color::White);
 
+        value = 0;
+
         valueText = sf::Text();
         valueText.setFont(font);
-        valueText.setString(std::to_string(4));
+        valueText.setString(std::to_string(value));
         valueText.setCharacterSize(12);
         valueText.setOrigin(6,6);
         valueText.setPosition(pos.x + width / 2 , pos.y + height / 2);
@@ -69,22 +72,42 @@ struct Tile
         shape.setFillColor(color);
     }
 
-
     void AddBlock()
     {
-        isBlocked = true;
+        value = -1;
         shape.setFillColor(sf::Color(0,100,100));
     }
 
     void RemoveBlock()
     {
-        isBlocked = false;
+        value = 0;
         shape.setFillColor(sf::Color::Transparent);
     }
 
     bool IsBlocked() const
     {
-        return isBlocked;
+        return value == -1;
+    }
+
+    void SetValue(const int in_value)
+    {
+        value = in_value;
+        valueText.setString(std::to_string(value));
+    }
+
+    int GetValue() const
+    {
+        return value;
+    }
+
+    bool operator==(const Tile& other) const
+    {
+        return GetTileNum().x == other.GetTileNum().x && GetTileNum().y == other.GetTileNum().y;
+    }
+
+    bool operator!=(const Tile& other) const
+    {
+        return GetTileNum().x == other.GetTileNum().x && GetTileNum().y == other.GetTileNum().y;
     }
 
 private:
@@ -94,8 +117,8 @@ private:
     sf::Vector2i pos;
     int width;
     int height;
-    bool isBlocked = false;
     std::tuple<int,int> tileNum;
+    int value;
 };
 
 class PathfindingDemo
@@ -158,7 +181,7 @@ private:
                 }
                 if(event.key.code == sf::Keyboard::Space)
                 {
-                    FindPath();
+                    FindPath(&tiles[0], &tiles[30]);
                 }
             }
             if (event.type == sf::Event::KeyReleased)
@@ -263,9 +286,10 @@ private:
         }
     }
 
-    void DetectNeighbours(const Tile& tile)
+    std::vector<Tile*> DetectNeighbours(const Tile& tile)
     {
-        if(tile.IsBlocked()) return;
+        std::vector<Tile*> tiles;
+        if(tile.IsBlocked()) return tiles;
 
         const auto w = tile.GetTileNum().x;
         const auto h = tile.GetTileNum().y;
@@ -275,10 +299,12 @@ private:
         const auto u = GetTileAt(w    , h + 1);
         const auto d = GetTileAt(w    , h - 1);
 
-        if(r != nullptr) r->ColorTile(sf::Color::Blue);
-        if(l != nullptr) l->ColorTile(sf::Color::Blue);
-        if(u != nullptr) u->ColorTile(sf::Color::Blue);
-        if(d != nullptr) d->ColorTile(sf::Color::Blue);
+        if(r != nullptr) tiles.push_back(r);
+        if(l != nullptr) tiles.push_back(l);
+        if(u != nullptr) tiles.push_back(u);
+        if(d != nullptr) tiles.push_back(d);
+
+        return tiles;
     }
 
     Tile* GetTileAt(const int w, const int h)
@@ -292,15 +318,42 @@ private:
         return nullptr;
     }
 
-    void FindPath()
+    void FindPath(Tile* endTile, Tile* startTile)
     {
-        Tile& startingTile = tiles[0];
         int value = 1;
         bool hasReached = false;
+
+        std::set<Tile*> processingTiles;
+        std::set<Tile*> newlyDiscoveredTiles;
+
+        processingTiles.insert(endTile);
+
         while (hasReached == false)
         {
-            DetectNeighbours(startingTile);
+            for (auto t : processingTiles)
+            {
+                if(t == startTile)
+                {
+                    hasReached = true;
+                    break;
+                }
+
+                t->SetValue(value);
+
+                for (auto nt : DetectNeighbours(*t))
+                {
+                    if(nt->GetValue() == 0)
+                    {
+                        newlyDiscoveredTiles.insert(nt);
+                    }
+                }
+            }
+
+            processingTiles.clear();
+            processingTiles = newlyDiscoveredTiles;
+            newlyDiscoveredTiles.clear();
             value++;
+
             if (value == 4)
                 hasReached = true;
         }
