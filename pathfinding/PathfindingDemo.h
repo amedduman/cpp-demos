@@ -336,11 +336,11 @@ private:
         {
             for (auto t : processingTiles)
             {
-                if(t == startTile)
-                {
-                    hasReached = true;
-                    break;
-                }
+                // if(t == startTile)
+                // {
+                //     hasReached = true;
+                //     break;
+                // }
 
                 t->SetValue(value);
 
@@ -352,6 +352,9 @@ private:
                     }
                 }
             }
+
+            if(newlyDiscoveredTiles.empty())
+                break;
 
             processingTiles.clear();
             processingTiles = newlyDiscoveredTiles;
