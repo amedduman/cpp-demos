@@ -23,9 +23,17 @@ struct Tile
         tileNumberText = sf::Text();
         tileNumberText.setFont(font);
         tileNumberText.setString(std::to_string(std::get<0>(tileNum)) + ", " + std::to_string(std::get<1>(tileNum)));
-        tileNumberText.setCharacterSize(16);
+        tileNumberText.setCharacterSize(12);
         tileNumberText.setPosition(pos.x, pos.y);
         tileNumberText.setFillColor(sf::Color::White);
+
+        valueText = sf::Text();
+        valueText.setFont(font);
+        valueText.setString(std::to_string(4));
+        valueText.setCharacterSize(12);
+        valueText.setOrigin(6,6);
+        valueText.setPosition(pos.x + width / 2 , pos.y + height / 2);
+        valueText.setFillColor(sf::Color::Yellow);
     }
 
     const sf::RectangleShape& GetShape()
@@ -33,9 +41,14 @@ struct Tile
         return shape;
     }
 
-    const sf::Text& GetText()
+    const sf::Text& GetTileNumText()
     {
         return tileNumberText;
+    }
+
+    const sf::Text& GetTileValueText()
+    {
+        return valueText;
     }
 
     sf::Vector2i GetTileNum() const
@@ -50,6 +63,12 @@ struct Tile
         return point.x >= pos.x && point.x <= pos.x + width &&
                point.y >= pos.y && point.y <= pos.y + height;
     }
+
+    void ColorTile(const sf::Color& color)
+    {
+        shape.setFillColor(color);
+    }
+
 
     void AddBlock()
     {
@@ -71,6 +90,7 @@ struct Tile
 private:
     sf::RectangleShape shape;
     sf::Text tileNumberText;
+    sf::Text valueText;
     sf::Vector2i pos;
     int width;
     int height;
@@ -136,6 +156,10 @@ private:
                 {
                     isShiftPressed = true;
                 }
+                if(event.key.code == sf::Keyboard::Space)
+                {
+                    FindPath();
+                }
             }
             if (event.type == sf::Event::KeyReleased)
             {
@@ -169,14 +193,16 @@ private:
             }
         }
     }
+
     void Render()
     {
-        window.clear(sf::Color(25, 35,25));
+        window.clear(sf::Color(30, 30,30));
 
         for (auto& t : tiles)
         {
             window.draw(t.GetShape());
-            window.draw(t.GetText());
+            window.draw(t.GetTileNumText());
+            window.draw(t.GetTileValueText());
         }
 
         window.display();
@@ -214,11 +240,6 @@ private:
 
     void DetectNeighbours()
     {
-        std::vector<Tile*> neighbourTiles;
-
-        neighbourTiles.push_back(&tiles[0]);
-        neighbourTiles.push_back(&tiles[1]);
-
         const auto mousePos = sf::Mouse::getPosition(window);
         for (const auto & tile : tiles)
         {
@@ -234,22 +255,54 @@ private:
                 const auto u = GetTileAt(w    , h + 1);
                 const auto d = GetTileAt(w    , h - 1);
 
-                if(r != nullptr) r->AddBlock();
-                if(l != nullptr) l->AddBlock();
-                if(u != nullptr) u->AddBlock();
-                if(d != nullptr) d->AddBlock();
+                if(r != nullptr) r->ColorTile(sf::Color::Blue);
+                if(l != nullptr) l->ColorTile(sf::Color::Blue);
+                if(u != nullptr) u->ColorTile(sf::Color::Blue);
+                if(d != nullptr) d->ColorTile(sf::Color::Blue);
             }
         }
+    }
+
+    void DetectNeighbours(const Tile& tile)
+    {
+        if(tile.IsBlocked()) return;
+
+        const auto w = tile.GetTileNum().x;
+        const auto h = tile.GetTileNum().y;
+
+        const auto r = GetTileAt(w + 1, h    );
+        const auto l = GetTileAt(w - 1, h    );
+        const auto u = GetTileAt(w    , h + 1);
+        const auto d = GetTileAt(w    , h - 1);
+
+        if(r != nullptr) r->ColorTile(sf::Color::Blue);
+        if(l != nullptr) l->ColorTile(sf::Color::Blue);
+        if(u != nullptr) u->ColorTile(sf::Color::Blue);
+        if(d != nullptr) d->ColorTile(sf::Color::Blue);
     }
 
     Tile* GetTileAt(const int w, const int h)
     {
         for(auto& t : tiles)
         {
-            if(t.GetTileNum().x == w && t.GetTileNum().y == h)
+            if(t.IsBlocked() == false && t.GetTileNum().x == w && t.GetTileNum().y == h)
                 return &t;
         }
 
         return nullptr;
+    }
+
+    void FindPath()
+    {
+        Tile& startingTile = tiles[0];
+        int value = 1;
+        bool hasReached = false;
+        while (hasReached == false)
+        {
+            DetectNeighbours(startingTile);
+            value++;
+            if (value == 4)
+                hasReached = true;
+        }
     }
 };
