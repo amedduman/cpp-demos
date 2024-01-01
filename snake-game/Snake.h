@@ -14,6 +14,7 @@ public:
         segments.push_back(segment2);
         segments.push_back(segment3);
     }
+
     void Draw(sf::RenderWindow& window) const
     {
         for (auto& s : segments)
@@ -22,14 +23,12 @@ public:
 
     void Move(const sf::Vector2i deltaMove)
     {
-        
         for (int i = segments.size() - 1; i >= 0; --i)
         {
             if(segments[i].IsHead())
                 segments[i].Move(deltaMove);
             else if(i - 1 >= 0)
                 segments[i].Follow(segments[i-1]);
-
         }
     }
 private:

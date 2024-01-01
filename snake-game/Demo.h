@@ -11,13 +11,14 @@ public:
     int currentFrame = 0;
     Grid grid;
     Snake snake;
+    sf::Vector2i snakeMoveVec;
 
     Demo()
         :window(sf::VideoMode(800, 600), "demo"),
-        grid(),
         snake(sf::Vector2i(4,4))
     {
         window.setFramerateLimit(60);
+        snakeMoveVec = sf::Vector2i(1,0);
     }
 
     void Run()
@@ -30,8 +31,7 @@ public:
 
             if(currentFrame %20 == 0)
             {
-                printf("move");
-                snake.Move(sf::Vector2i(1,0));
+                snake.Move(snakeMoveVec);
             }
         }
     }
@@ -45,30 +45,30 @@ private:
                 window.close();
             if (event.type == sf::Event::KeyPressed)
             {
-                if(event.key.code == sf::Keyboard::Escape)
+                if(event.key.code == sf::Keyboard::W)
                 {
-                    window.close();
+                    if(snakeMoveVec.y == 1) return;
+                    snakeMoveVec = sf::Vector2i(0, -1);
+                }
+                if(event.key.code == sf::Keyboard::S)
+                {
+                    if(snakeMoveVec.y == -1) return;
+                    snakeMoveVec = sf::Vector2i(0, 1);
+                }
+                if(event.key.code == sf::Keyboard::A)
+                {
+                    if(snakeMoveVec.x == 1) return;
+                    snakeMoveVec = sf::Vector2i(-1, 0);
+                }
+                if(event.key.code == sf::Keyboard::D)
+                {
+                    if(snakeMoveVec.x == -1) return;
+                    snakeMoveVec = sf::Vector2i(1, 0);
                 }
                 if(event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
                 }
-            }
-            if (event.type == sf::Event::KeyReleased)
-            {
-            }
-
-            if (event.type == sf::Event::MouseButtonPressed)
-            {
-                if (event.mouseButton.button == sf::Mouse::Left)
-                {
-                }
-                if (event.mouseButton.button == sf::Mouse::Right)
-                {
-                }
-            }
-            if (event.type == sf::Event::MouseButtonReleased)
-            {
             }
         }
     }
