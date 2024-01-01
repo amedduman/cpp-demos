@@ -12,6 +12,7 @@ public:
     Grid grid;
     Snake snake;
     sf::Vector2i snakeMoveVec;
+    bool canInput;
 
     Demo()
         :window(sf::VideoMode(800, 600), "demo"),
@@ -19,6 +20,7 @@ public:
     {
         window.setFramerateLimit(60);
         snakeMoveVec = sf::Vector2i(1,0);
+        canInput = true;
     }
 
     void Run()
@@ -32,6 +34,7 @@ public:
             if(currentFrame %20 == 0)
             {
                 snake.Move(snakeMoveVec);
+                canInput = true;
             }
         }
     }
@@ -45,26 +48,34 @@ private:
                 window.close();
             if (event.type == sf::Event::KeyPressed)
             {
-                if(event.key.code == sf::Keyboard::W)
+                if(canInput)
                 {
-                    if(snakeMoveVec.y == 1) return;
-                    snakeMoveVec = sf::Vector2i(0, -1);
+                    if(event.key.code == sf::Keyboard::W)
+                    {
+                        if(snakeMoveVec.y == 1) return;
+                        snakeMoveVec = sf::Vector2i(0, -1);
+                        canInput = false;
+                    }
+                    if(event.key.code == sf::Keyboard::S)
+                    {
+                        if(snakeMoveVec.y == -1) return;
+                        snakeMoveVec = sf::Vector2i(0, 1);
+                        canInput = false;
+                    }
+                    if(event.key.code == sf::Keyboard::A)
+                    {
+                        if(snakeMoveVec.x == 1) return;
+                        snakeMoveVec = sf::Vector2i(-1, 0);
+                        canInput = false;
+                    }
+                    if(event.key.code == sf::Keyboard::D)
+                    {
+                        if(snakeMoveVec.x == -1) return;
+                        snakeMoveVec = sf::Vector2i(1, 0);
+                        canInput = false;
+                    }
                 }
-                if(event.key.code == sf::Keyboard::S)
-                {
-                    if(snakeMoveVec.y == -1) return;
-                    snakeMoveVec = sf::Vector2i(0, 1);
-                }
-                if(event.key.code == sf::Keyboard::A)
-                {
-                    if(snakeMoveVec.x == 1) return;
-                    snakeMoveVec = sf::Vector2i(-1, 0);
-                }
-                if(event.key.code == sf::Keyboard::D)
-                {
-                    if(snakeMoveVec.x == -1) return;
-                    snakeMoveVec = sf::Vector2i(1, 0);
-                }
+
                 if(event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
