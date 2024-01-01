@@ -5,6 +5,11 @@
 class Grid
 {
 public:
+    static constexpr int width = 20;
+    static constexpr int height = 20;
+    static constexpr int coloumCount = 40;
+    static constexpr int rowCount = 30;
+
     Grid()
     {
         for (int v = 0; v < 600/height; ++v)
@@ -26,7 +31,5 @@ public:
     }
 
 private:
-    static constexpr int width = 20;
-    static constexpr int height = 20;
     std::vector<Cell> tiles;
 };

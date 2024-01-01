@@ -21,6 +21,13 @@ public:
     void Move(const sf::Vector2i deltaMove)
     {
         myGridPos += deltaMove;
+        if(myGridPos.x < 0)
+            myGridPos.x = 39;
+        if(myGridPos.y < 0)
+            myGridPos.y = 29;
+        myGridPos.x %= 40;
+        myGridPos.y %= 30;
+
         shape.setPosition(myGridPos.x * 20, myGridPos.y * 20);
     }
 
