@@ -7,7 +7,8 @@ add_executable(demo main.cpp demo.h
         Cell.h
         Snake.h
         SnakeSegment.h
-        Grid.h)
+        Grid.h
+        Food.h)
 
 find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
 target_link_libraries(demo sfml-window sfml-graphics)

@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <SFML/Graphics.hpp>
+
+#include "Food.h"
 #include "Grid.h"
 #include "Snake.h"
 
@@ -13,6 +15,7 @@ public:
     Snake snake;
     sf::Vector2i snakeMoveVec;
     bool canInput;
+    Food food;
 
     Demo()
         :window(sf::VideoMode(800, 600), "demo"),
@@ -21,6 +24,9 @@ public:
         window.setFramerateLimit(60);
         snakeMoveVec = sf::Vector2i(1,0);
         canInput = true;
+
+        auto foodPos = grid.GetAvailableCell(snake);
+        food.SetGridPosition(foodPos);
     }
 
     void Run()
@@ -35,6 +41,9 @@ public:
             {
                 snake.Move(snakeMoveVec);
                 canInput = true;
+
+                if(food.HasEaten(snake))
+                    food.SetGridPosition(grid.GetAvailableCell(snake));
             }
         }
     }
@@ -90,6 +99,7 @@ private:
 
         grid.Draw(window);
         snake.Draw(window);
+        food.Draw(window);
 
         window.display();
     }

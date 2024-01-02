@@ -31,6 +31,25 @@ public:
                 segments[i].Follow(segments[i-1]);
         }
     }
+
+    const SnakeSegment& GetHead() const
+    {
+        return segments[0];
+    }
+
+    bool IsSnakeOccupiesThisTile(const sf::Vector2i cellIndex) const
+    {
+        for (auto& s : segments)
+        {
+            const auto segmentGridPos = s.GetGridPos();
+            if (cellIndex == segmentGridPos)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 private:
     std::vector<SnakeSegment> segments;
 };
