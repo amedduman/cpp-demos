@@ -16,6 +16,7 @@ public:
     sf::Vector2i snakeMoveVec;
     bool canInput;
     Food food;
+    bool canRun = true;
 
     Demo()
         :window(sf::VideoMode(800, 600), "demo"),
@@ -37,10 +38,13 @@ public:
             Input();
             Render();
 
-            if(currentFrame %20 == 0)
+            if(currentFrame %20 == 0 &&  canRun)
             {
                 snake.Move(snakeMoveVec);
                 canInput = true;
+
+                if(snake.CheckSelfCollide())
+                    canRun = false;
 
                 if(food.HasEaten(snake))
                 {
@@ -92,15 +96,19 @@ private:
                 {
                     window.close();
                 }
+                if(event.key.code == sf::Keyboard::Space)
+                {
+                    snake.Grow();
+                }
             }
         }
     }
 
     void Render()
     {
-        window.clear(sf::Color(30, 30,30));
+        window.clear(sf::Color(130, 150,150));
 
-        grid.Draw(window);
+        // grid.Draw(window);
         snake.Draw(window);
         food.Draw(window);
 

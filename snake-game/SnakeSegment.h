@@ -37,6 +37,11 @@ public:
         Move(sf::Vector2i(0,0));
     }
 
+    void Color(sf::Color color)
+    {
+        shape.setFillColor(color);
+    }
+
     bool IsHead() const
     {
         return isHead;

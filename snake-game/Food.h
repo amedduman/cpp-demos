@@ -18,7 +18,7 @@ public:
         shape.setPosition( gridPos.x * 20, gridPos.y * 20);
     }
 
-    bool HasEaten(const Snake& snake)
+    bool HasEaten(const Snake& snake) const
     {
         return myGridPos == snake.GetHead().GetGridPos();
     }

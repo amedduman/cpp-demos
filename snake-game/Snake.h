@@ -7,12 +7,9 @@ class Snake
 public:
     explicit Snake(const sf::Vector2i startingGridPos)
     {
-        const auto segment = SnakeSegment(startingGridPos, true);
-        const auto segment2 = SnakeSegment(startingGridPos);
-        const auto segment3 = SnakeSegment(startingGridPos);
+        auto segment = SnakeSegment(startingGridPos, true);
+        segment.Color(sf::Color::Green);
         segments.push_back(segment);
-        segments.push_back(segment2);
-        segments.push_back(segment3);
     }
 
     void Draw(sf::RenderWindow& window) const
@@ -41,6 +38,24 @@ public:
     {
         const auto segment = SnakeSegment(segments[segments.size()-1].GetGridPos());
         segments.push_back(segment);
+
+        for (int i = 0; i < segments.size(); ++i)
+        {
+            const float green = std::lerp(255, 100, static_cast<float>(i + 1)/static_cast<float>(segments.size()));
+            std::cout << green << std::endl;
+            segments[i].Color(sf::Color(0,green,100));
+        }
+    }
+
+    bool CheckSelfCollide()
+    {
+        auto headPos = GetHead().GetGridPos();
+
+        for (int i = 1; i < segments.size(); ++i)
+        {
+            if(headPos == segments[i].GetGridPos()) return true;
+        }
+        return false;
     }
 
     bool IsSnakeOccupiesThisTile(const sf::Vector2i cellIndex) const
