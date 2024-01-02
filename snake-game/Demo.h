@@ -38,7 +38,7 @@ public:
             Input();
             Render();
 
-            if(currentFrame %20 == 0 &&  canRun)
+            if(currentFrame %10 == 0 &&  canRun)
             {
                 snake.Move(snakeMoveVec);
                 canInput = true;

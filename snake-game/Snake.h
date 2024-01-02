@@ -41,8 +41,7 @@ public:
 
         for (int i = 0; i < segments.size(); ++i)
         {
-            const float green = std::lerp(255, 100, static_cast<float>(i + 1)/static_cast<float>(segments.size()));
-            std::cout << green << std::endl;
+            const float green = std::lerp(255, 100, static_cast<float>(i)/static_cast<float>(segments.size()));
             segments[i].Color(sf::Color(0,green,100));
         }
     }
