@@ -37,6 +37,12 @@ public:
         return segments[0];
     }
 
+    void Grow()
+    {
+        const auto segment = SnakeSegment(segments[segments.size()-1].GetGridPos());
+        segments.push_back(segment);
+    }
+
     bool IsSnakeOccupiesThisTile(const sf::Vector2i cellIndex) const
     {
         for (auto& s : segments)

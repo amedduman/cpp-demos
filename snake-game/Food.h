@@ -9,6 +9,7 @@ public:
         shape.setPosition( 0,0);
         shape.setSize(sf::Vector2f(16, 16));
         shape.setOrigin(-2,-2);
+        shape.setFillColor(sf::Color::Yellow);
     }
 
     void SetGridPosition(sf::Vector2i gridPos)

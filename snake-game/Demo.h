@@ -43,7 +43,10 @@ public:
                 canInput = true;
 
                 if(food.HasEaten(snake))
+                {
+                    snake.Grow();
                     food.SetGridPosition(grid.GetAvailableCell(snake));
+                }
             }
         }
     }
