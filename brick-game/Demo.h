@@ -32,16 +32,21 @@ public:
 
             paddle.Move(paddleInput);
 
-            const auto overlap = AABB::GetOverlapArea(paddle.GetShape(), ball.GetShape());
+            const auto overlap = AABB::GetOverlapArea
+            (
+                paddle.GetShape().getPosition(), paddle.GetShape().getSize(),
+                ball.GetShape().getPosition(), ball.GetShape().getSize()
+            );
             if(overlap.x > 0 && overlap.y > 0)
             {
-                std::cout << "overlap" << std::endl;
+                // std::cout << "overlap" << std::endl;
 
                 const auto pos = paddle.GetShape().getPosition();
                 const auto halfSize = paddle.GetShape().getSize();
 
                 auto paddleRect = sf::Rect<float>(pos.x - halfSize.x, pos.y + halfSize.y, halfSize.x * 2, halfSize.y * 2);
                 ball.ReboundIfExceedBoundary(paddleRect);
+                // ball.Pause();
             }
 
             Render();
@@ -85,6 +90,9 @@ private:
                 }
             }
 #pragma endregion
+            if (event.type == sf::Event::KeyPressed)
+                if(event.key.code == sf::Keyboard::A)
+                    ball.UnPause();
         }
     }
     void Render()

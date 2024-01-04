@@ -6,9 +6,9 @@ class Paddle
 public:
     Paddle()
     {
-        shape.setSize(sf::Vector2f(100,20));
+        shape.setSize(sf::Vector2f(100,200));
         shape.setPosition(350, 550);
-        shape.setOrigin(50, 10);
+        shape.setOrigin(50, 100);
         shape.setFillColor(sf::Color::Cyan);
     }
     void Move(const int deltaMoveX)

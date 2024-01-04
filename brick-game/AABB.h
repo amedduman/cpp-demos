@@ -19,4 +19,16 @@ public:
         const auto overlapArea = sf::Vector2f(halfWidth1 + halfWidth2 - dx, halfHeight1 + halfHeight2 - dy);
         return overlapArea;
     }
+
+    static sf::Vector2f GetOverlapArea(const sf::Vector2f posA, const sf::Vector2f sizeA, const sf::Vector2f posB, const sf::Vector2f sizeB)
+    {
+        const auto halfWidthA = sizeA.x/2;
+        const auto halfHeightA = sizeA.y/2;
+        const auto halfWidthB = sizeB.x/2;
+        const auto halfHeightB = sizeB.y/2;
+        const float dx = abs(posA.x - posB.x);
+        const float dy = abs(posA.y - posB.y);
+        const auto overlapArea = sf::Vector2f(halfWidthA + halfWidthB - dx, halfHeightA + halfHeightB - dy);
+        return overlapArea;
+    }
 };

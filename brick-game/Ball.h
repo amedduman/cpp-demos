@@ -14,13 +14,18 @@ public:
     }
     void Move()
     {
+        if(isStopped) return;
         auto pos = shape.getPosition();
         pos += velocity;
         shape.setPosition(pos);
     }
-    void Stop()
+    void Pause()
     {
-        velocity = sf::Vector2f(0,0);
+        isStopped = true;
+    }
+    void UnPause()
+    {
+        isStopped = false;
     }
     void ReboundIfExceedBoundary(const sf::Rect<float>& rect)
     {
@@ -43,4 +48,5 @@ public:
 private:
     sf::RectangleShape shape;
     sf::Vector2f velocity;
+    bool isStopped = false;
 };
