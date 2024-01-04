@@ -8,9 +8,9 @@ public:
     Ball()
     {
         shape.setPosition(sf::Vector2f(400,300));
-        shape.setRadius(10);
-        shape.setOrigin(sf::Vector2f(10,10));
-        velocity = sf::Vector2f(-1l,1);
+        shape.setSize(sf::Vector2f(10,10));
+        shape.setOrigin(sf::Vector2f(5,5));
+        velocity = sf::Vector2f(-3,3);
     }
     void Move()
     {
@@ -18,25 +18,29 @@ public:
         pos += velocity;
         shape.setPosition(pos);
     }
+    void Stop()
+    {
+        velocity = sf::Vector2f(0,0);
+    }
     void ReboundIfExceedBoundary(const sf::Rect<float>& rect)
     {
         const auto pos = shape.getPosition();
-        const auto radius = shape.getRadius();
+        const auto size = shape.getSize();
 
-        if(pos.x - radius  < rect.left)
+        if(pos.x - size.x  < rect.left)
             velocity.x *= -1;
-        if(pos.x + radius > rect.left + rect.width)
+        if(pos.x + size.x > rect.left + rect.width)
             velocity.x *= -1;
-        if(pos.y - radius < rect.top)
+        if(pos.y - size.y < rect.top)
             velocity.y *= -1;
-        if(pos.y + radius > rect.top +rect.height)
+        if(pos.y + size.y > rect.top +rect.height)
             velocity.y *= -1;
     }
-    const sf::CircleShape& GetShape() const
+    const sf::RectangleShape& GetShape() const
     {
         return shape;
     }
 private:
-    sf::CircleShape shape;
+    sf::RectangleShape shape;
     sf::Vector2f velocity;
 };
