@@ -9,8 +9,8 @@ public:
     {
         shape.setPosition(sf::Vector2f(400,300));
         shape.setRadius(10);
-
-        velocity = sf::Vector2f(-5,1);
+        shape.setOrigin(sf::Vector2f(10,10));
+        velocity = sf::Vector2f(-1l,1);
     }
     void Move()
     {
@@ -21,13 +21,15 @@ public:
     void ReboundIfExceedBoundary(const sf::Rect<float>& rect)
     {
         const auto pos = shape.getPosition();
-        if(pos.x < rect.left)
+        const auto radius = shape.getRadius();
+
+        if(pos.x - radius  < rect.left)
             velocity.x *= -1;
-        if(pos.x > rect.left + rect.width)
+        if(pos.x + radius > rect.left + rect.width)
             velocity.x *= -1;
-        if(pos.y < rect.top)
+        if(pos.y - radius < rect.top)
             velocity.y *= -1;
-        if(pos.y > rect.top +rect.height)
+        if(pos.y + radius > rect.top +rect.height)
             velocity.y *= -1;
     }
     const sf::CircleShape& GetShape() const
