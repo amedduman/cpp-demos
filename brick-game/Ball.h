@@ -7,16 +7,32 @@ class Ball
 public:
     Ball()
     {
-        shape.setPosition(sf::Vector2f(400,300));
-        shape.setSize(sf::Vector2f(10,10));
-        shape.setOrigin(sf::Vector2f(5,5));
-        velocity = sf::Vector2f(-3,3);
+        const auto pos = sf::Vector2f(300,100);
+        const auto size = sf::Vector2f(10,10);
+
+        previousPos = pos;
+
+        shape.setPosition(pos);
+        shape.setSize(size);
+        shape.setOrigin(size.x/2, size.y/2);
+
+        velocity = sf::Vector2f(0,3);
     }
     void Move()
     {
         if(isStopped) return;
+
         auto pos = shape.getPosition();
+        previousPos = pos;
         pos += velocity;
+        shape.setPosition(pos);
+    }
+    sf::Vector2f GetPeviousPos()
+    {
+        return previousPos;
+    }
+    void SetPos(sf::Vector2f pos)
+    {
         shape.setPosition(pos);
     }
     void Pause()
@@ -26,6 +42,14 @@ public:
     void UnPause()
     {
         isStopped = false;
+    }
+    void ReboundX()
+    {
+        velocity.x *= -1;
+    }
+    void ReboundY()
+    {
+        velocity.y *= -1;
     }
     void ReboundIfExceedBoundary(const sf::Rect<float>& rect)
     {
@@ -49,4 +73,5 @@ private:
     sf::RectangleShape shape;
     sf::Vector2f velocity;
     bool isStopped = false;
+    sf::Vector2f previousPos;
 };

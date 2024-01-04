@@ -39,14 +39,25 @@ public:
             );
             if(overlap.x > 0 && overlap.y > 0)
             {
-                // std::cout << "overlap" << std::endl;
+                const auto previousOverlap = AABB::GetOverlapArea
+                (
+                    paddle.GetPreviousPos(), paddle.GetShape().getSize(),
+                    ball.GetPeviousPos(), ball.GetShape().getSize()
+                );
 
-                const auto pos = paddle.GetShape().getPosition();
-                const auto halfSize = paddle.GetShape().getSize();
+                const auto postResolutionPos = AABB::GetPosResolutionPosition
+                (
+                 ball.GetShape().getPosition(),
+                ball.GetPeviousPos(),
+                     overlap, previousOverlap
+                );
 
-                auto paddleRect = sf::Rect<float>(pos.x - halfSize.x, pos.y + halfSize.y, halfSize.x * 2, halfSize.y * 2);
-                ball.ReboundIfExceedBoundary(paddleRect);
-                // ball.Pause();
+                ball.SetPos(postResolutionPos);
+                if(overlap.y > 0)
+                    ball.ReboundX();
+                if(overlap.x > 0)
+                    ball.ReboundY();
+                // Pause();
             }
 
             Render();
@@ -91,9 +102,20 @@ private:
             }
 #pragma endregion
             if (event.type == sf::Event::KeyPressed)
-                if(event.key.code == sf::Keyboard::A)
-                    ball.UnPause();
+                if(event.key.code == sf::Keyboard::Space)
+                    UnPause();
         }
+    }
+    void UnPause()
+    {
+        ball.UnPause();
+        paddle.UnPause();
+    }
+    void Pause()
+    {
+        paddleInput = 0;
+        ball.Pause();
+        paddle.Pause();
     }
     void Render()
     {
