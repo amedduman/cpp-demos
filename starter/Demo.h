@@ -1,13 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class StarterDemo
+class Demo
 {
 public:
     sf::RenderWindow m_window;
 
-    StarterDemo()
-        :m_window(sf::VideoMode(800, 600), "My window")
+    Demo()
+        :m_window(sf::VideoMode(800, 600), "Demo")
     {}
 
     void Run()

@@ -1,7 +1,7 @@
-#include "StarterDemo.h"
+#include "Demo.h"
 
 int main()
 {
-    StarterDemo demo;
+    Demo demo;
     demo.Run();
 }
