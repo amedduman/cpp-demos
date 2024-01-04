@@ -33,22 +33,26 @@ public:
         return overlapArea;
     }
 
-    static sf::Vector2f GetPosResolutionPosition(sf::Vector2f pos, sf::Vector2f pPos, sf::Vector2f overlap, sf::Vector2f pOverlap)
+    static sf::Vector2f GetPostResolutionPosition(sf::Vector2f pos, sf::Vector2f pPos, sf::Vector2f overlap, sf::Vector2f pOverlap)
     {
         sf::Vector2f resolutionVec;
 
         if(pOverlap.y > 0)
         {
             // move in x direction to resolve the collision
+            const auto delta = abs(pos.x-pPos.x);
+            // if(delta < 0.1f)
+            // {
+            //     std::cout << "this is the case" << std::endl;
+            //     resolutionVec = sf::Vector2f(pos.x - overlap.x, pos.y);
+            // }
             if (pos.x > pPos.x)
             {
                 resolutionVec = sf::Vector2f(pos.x - overlap.x, pos.y);
-                // trP->SetPos(trP->GetPos().x - overlapArea.x, trP->GetPos().y);
             }
             else
             {
                 resolutionVec = sf::Vector2f(pos.x + overlap.x, pos.y);
-                // trP->SetPos(trP->GetPos().x + overlapArea.x, trP->GetPos().y);
             }
         }
         if(pOverlap.x > 0)
@@ -57,12 +61,46 @@ public:
             if (pos.y > pPos.y)
             {
                 resolutionVec = sf::Vector2f(pos.x, pos.y - overlap.y);
-                // trP->SetPos(trP->GetPos().x, trP->GetPos().y  - overlapArea.y);
             }
             else
             {
                 resolutionVec = sf::Vector2f(pos.x, pos.y + overlap.y);
-                // trP->SetPos(trP->GetPos().x, trP->GetPos().y  + overlapArea.y);
+            }
+        }
+
+        return resolutionVec;
+    }
+
+    static sf::Vector2f GetPostResolutionBallPosition(sf::Vector2f pos, sf::Vector2f pPos, sf::Vector2f paddlePos, sf::Vector2f overlap, sf::Vector2f pOverlap)
+    {
+        sf::Vector2f resolutionVec;
+
+        if(pOverlap.y > 0)
+        {
+            // move in x direction to resolve the collision
+            if(paddlePos.x > pos.x)
+                resolutionVec = sf::Vector2f(pos.x - overlap.x, pos.y);
+            else
+                resolutionVec = sf::Vector2f(pos.x + overlap.x, pos.y);
+            // if (pos.x > pPos.x)
+            // {
+            //     resolutionVec = sf::Vector2f(pos.x - overlap.x, pos.y);
+            // }
+            // else
+            // {
+            //     resolutionVec = sf::Vector2f(pos.x + overlap.x, pos.y);
+            // }
+        }
+        if(pOverlap.x > 0)
+        {
+            // move in y direction to resolve the collision
+            if (pos.y > pPos.y)
+            {
+                resolutionVec = sf::Vector2f(pos.x, pos.y - overlap.y);
+            }
+            else
+            {
+                resolutionVec = sf::Vector2f(pos.x, pos.y + overlap.y);
             }
         }
 

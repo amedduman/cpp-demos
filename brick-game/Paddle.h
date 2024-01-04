@@ -26,6 +26,10 @@ public:
         pos.x += static_cast<float>(deltaMoveX) * speed;
         shape.setPosition(pos);
     }
+    void SetPos(sf::Vector2f pos)
+    {
+        shape.setPosition(pos);
+    }
     void Pause()
     {
         canMove = false;

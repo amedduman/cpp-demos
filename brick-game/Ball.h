@@ -8,7 +8,7 @@ public:
     Ball()
     {
         const auto pos = sf::Vector2f(300,100);
-        const auto size = sf::Vector2f(10,10);
+        const auto size = sf::Vector2f(20,10);
 
         previousPos = pos;
 
@@ -27,7 +27,7 @@ public:
         pos += velocity;
         shape.setPosition(pos);
     }
-    sf::Vector2f GetPeviousPos()
+    sf::Vector2f GetPreviousPos() const
     {
         return previousPos;
     }
@@ -50,6 +50,12 @@ public:
     void ReboundY()
     {
         velocity.y *= -1;
+    }
+    void AddVel(const float velx, const float vely)
+    {
+        velocity += sf::Vector2f(velx, vely);
+
+        std::cout << velocity.x << ", " << velocity.y << std::endl;
     }
     void ReboundIfExceedBoundary(const sf::Rect<float>& rect)
     {

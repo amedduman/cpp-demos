@@ -13,6 +13,8 @@ public:
     Ball ball;
     sf::Rect<float> screenRect;
     int paddleInput;
+    bool isPaused;
+    sf::Vector2f postResPos;
 
     Demo()
         :window(sf::VideoMode(800, 600), "Demo")
@@ -20,6 +22,8 @@ public:
         window.setFramerateLimit(60);
         screenRect = sf::Rect<float>(0,0,800,600);
         paddleInput = 0;
+        isPaused = false;
+        postResPos = sf::Vector2f(0,0);
     }
 
     void Run()
@@ -37,27 +41,35 @@ public:
                 paddle.GetShape().getPosition(), paddle.GetShape().getSize(),
                 ball.GetShape().getPosition(), ball.GetShape().getSize()
             );
-            if(overlap.x > 0 && overlap.y > 0)
+            if(overlap.x > 0 && overlap.y > 0 && isPaused == false)
             {
                 const auto previousOverlap = AABB::GetOverlapArea
                 (
                     paddle.GetPreviousPos(), paddle.GetShape().getSize(),
-                    ball.GetPeviousPos(), ball.GetShape().getSize()
+                    ball.GetPreviousPos(), ball.GetShape().getSize()
                 );
 
-                const auto postResolutionPos = AABB::GetPosResolutionPosition
+                const auto postResolutionPos = AABB::GetPostResolutionBallPosition
                 (
-                 ball.GetShape().getPosition(),
-                ball.GetPeviousPos(),
-                     overlap, previousOverlap
+                    ball.GetShape().getPosition(),
+                    ball.GetPreviousPos(),
+                    paddle.GetShape().getPosition(),
+                    overlap, previousOverlap
                 );
 
-                ball.SetPos(postResolutionPos);
-                if(overlap.y > 0)
-                    ball.ReboundX();
-                if(overlap.x > 0)
-                    ball.ReboundY();
-                // Pause();
+                // ball.SetPos(postResolutionPos);
+                postResPos = postResolutionPos;
+                // if(overlap.y > 0)
+                // {
+                //     // ball.AddVel(10, 0);
+                //     ball.ReboundX();
+                // }
+                // if(overlap.x > 0)
+                // {
+                //     ball.AddVel(0,1);
+                //     ball.ReboundY();
+                // }
+                Pause();
             }
 
             Render();
@@ -104,15 +116,20 @@ private:
             if (event.type == sf::Event::KeyPressed)
                 if(event.key.code == sf::Keyboard::Space)
                     UnPause();
+            if (event.type == sf::Event::KeyPressed)
+                if(event.key.code == sf::Keyboard::F)
+                    ball.SetPos(postResPos);
         }
     }
     void UnPause()
     {
         ball.UnPause();
         paddle.UnPause();
+        isPaused = false;
     }
     void Pause()
     {
+        isPaused = true;
         paddleInput = 0;
         ball.Pause();
         paddle.Pause();
