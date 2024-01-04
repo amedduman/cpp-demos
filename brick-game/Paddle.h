@@ -14,7 +14,7 @@ public:
     void Move(const int deltaMoveX)
     {
         auto pos = shape.getPosition();
-        pos.x += static_cast<float>(deltaMoveX);
+        pos.x += static_cast<float>(deltaMoveX) * speed;
         shape.setPosition(pos);
     }
     const sf::RectangleShape& GetShape() const
@@ -23,4 +23,5 @@ public:
     }
 private:
     sf::RectangleShape shape;
+    float speed = 5;
 };

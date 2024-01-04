@@ -12,14 +12,14 @@ public:
     Paddle paddle;
     Ball ball;
     sf::Rect<float> screenRect;
-    int paddleDeltaMoveX;
+    int paddleInput;
 
     Demo()
         :window(sf::VideoMode(800, 600), "Demo")
     {
         window.setFramerateLimit(60);
         screenRect = sf::Rect<float>(0,0,800,600);
-        paddleDeltaMoveX = 0;
+        paddleInput = 0;
     }
 
     void Run()
@@ -29,6 +29,8 @@ public:
             Input();
             ball.Move();
             ball.ReboundIfExceedBoundary(screenRect);
+
+            paddle.Move(paddleInput);
 
             const auto overlap = AABB::GetOverlapArea(paddle.GetShape(), ball.GetShape());
             if(overlap.x > 0 && overlap.y > 0)
@@ -48,29 +50,41 @@ public:
 private:
     void Input()
     {
+
         sf::Event event {};
         while (window.pollEvent(event))
         {
+#pragma region CloseWindow
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::KeyPressed)
+                if(event.key.code == sf::Keyboard::Escape)
+                    window.close();
+#pragma endregion
+#pragma region PaddleInput
+            if (event.type == sf::Event::KeyPressed)
             {
-                if(event.key.code == sf::Keyboard::Escape)
+                if(event.key.code == sf::Keyboard::A)
                 {
-                    window.close();
+                    paddleInput = -1;
                 }
-                if(event.key.code == sf::Keyboard::Escape)
+                if(event.key.code == sf::Keyboard::D)
                 {
-                    window.close();
-                }
-                if(event.key.code == sf::Keyboard::Space)
-                {
+                    paddleInput = 1;
                 }
             }
             if (event.type == sf::Event::KeyReleased)
             {
-
+                if(event.key.code == sf::Keyboard::A)
+                {
+                    paddleInput = 0;
+                }
+                if(event.key.code == sf::Keyboard::D)
+                {
+                    paddleInput = 0;
+                }
             }
+#pragma endregion
         }
     }
     void Render()
