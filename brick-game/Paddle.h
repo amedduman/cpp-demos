@@ -1,6 +1,8 @@
 #pragma once
 #include <SFML/Graphics/RectangleShape.hpp>
 
+#include "Blackboard.h"
+
 class Paddle
 {
 public:
@@ -23,6 +25,8 @@ public:
         if(!canMove) return;
         auto pos = shape.getPosition();
         previousPos = pos;
+        auto newX = pos.x + static_cast<float>(deltaMoveX) * speed;
+        if(newX + shape.getSize().x/2 > Blacboard::wW - 1 || newX - shape.getSize().x/2 < 1) return;
         pos.x += static_cast<float>(deltaMoveX) * speed;
         shape.setPosition(pos);
     }

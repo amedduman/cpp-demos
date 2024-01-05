@@ -4,6 +4,7 @@
 #include "Ball.h"
 #include "Paddle.h"
 #include "AABB.h"
+#include "Blackboard.h"
 #include "Tile.h"
 
 class Demo
@@ -19,7 +20,7 @@ public:
     std::vector<Tile> tiles;
 
     Demo()
-        :window(sf::VideoMode(800, 600), "Demo")
+        :window(sf::VideoMode(Blacboard::wW, Blacboard::wH), "Demo")
     {
         window.setFramerateLimit(60);
         screenRect = sf::Rect<float>(0,0,800,600);
