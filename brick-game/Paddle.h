@@ -17,12 +17,9 @@ public:
         shape.setSize(sf::Vector2f(size));
         shape.setOrigin(size.x/2, size.y/2);
         shape.setFillColor(sf::Color::Cyan);
-
-        canMove = true;
     }
     void Move(const int deltaMoveX)
     {
-        if(!canMove) return;
         auto pos = shape.getPosition();
         previousPos = pos;
         auto newX = pos.x + static_cast<float>(deltaMoveX) * speed;
@@ -33,14 +30,6 @@ public:
     void SetPos(sf::Vector2f pos)
     {
         shape.setPosition(pos);
-    }
-    void Pause()
-    {
-        canMove = false;
-    }
-    void UnPause()
-    {
-        canMove = true;
     }
     sf::Vector2f GetPreviousPos() const
     {
@@ -54,5 +43,4 @@ private:
     sf::RectangleShape shape;
     float speed = 5;
     sf::Vector2f previousPos;
-    bool canMove;
 };

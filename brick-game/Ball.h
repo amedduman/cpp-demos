@@ -2,6 +2,8 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <iostream>
 
+#include "Blackboard.h"
+
 class Ball
 {
 public:
@@ -20,12 +22,13 @@ public:
     }
     void Move()
     {
-        if(isStopped) return;
-
         auto pos = shape.getPosition();
         previousPos = pos;
         pos += velocity;
         shape.setPosition(pos);
+
+        if(pos.y > Blacboard::wH)
+            Blacboard::isGameOver = true;
     }
     sf::Vector2f GetPreviousPos() const
     {
@@ -34,14 +37,6 @@ public:
     void SetPos(sf::Vector2f pos)
     {
         shape.setPosition(pos);
-    }
-    void Pause()
-    {
-        isStopped = true;
-    }
-    void UnPause()
-    {
-        isStopped = false;
     }
     void ReboundX()
     {
@@ -70,8 +65,8 @@ public:
             velocity.x *= -1;
         if(pos.y - size.y < rect.top)
             velocity.y *= -1;
-        if(pos.y + size.y > rect.top +rect.height)
-            velocity.y *= -1;
+        // if(pos.y + size.y > rect.top +rect.height)
+        //     velocity.y *= -1;
     }
     const sf::RectangleShape& GetShape() const
     {
@@ -80,6 +75,5 @@ public:
 private:
     sf::RectangleShape shape;
     sf::Vector2f velocity;
-    bool isStopped = false;
     sf::Vector2f previousPos;
 };

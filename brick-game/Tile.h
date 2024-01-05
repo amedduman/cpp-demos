@@ -14,11 +14,15 @@ public:
         shape.setPosition(pos);
         shape.setSize(sf::Vector2f(size));
         shape.setOrigin(size.x/2, size.y/2);
-        shape.setFillColor(sf::Color(rand()%255,rand()%255,rand()%255));
+        shape.setFillColor(sf::Color(rand()%155 + 100,rand()%155 + 100,rand()%155 + 100));
     }
     void Destroy()
     {
         isDestroyed = true;
+    }
+    void ResetDestroy()
+    {
+        isDestroyed = false;
     }
     bool IsDestroyed() const
     {

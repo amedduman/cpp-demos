@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-
 #include "Ball.h"
 #include "Paddle.h"
 #include "AABB.h"
@@ -15,8 +14,6 @@ public:
     Ball ball;
     sf::Rect<float> screenRect;
     int paddleInput;
-    bool isPaused;
-    sf::Vector2f postResPos;
     std::vector<Tile> tiles;
 
     Demo()
@@ -25,20 +22,8 @@ public:
         window.setFramerateLimit(60);
         screenRect = sf::Rect<float>(0,0,800,600);
         paddleInput = 0;
-        isPaused = false;
-        postResPos = sf::Vector2f(0,0);
 
-        sf::Vector2f pos(0,0);
-
-        for (int w = 1; w < 13; ++w)
-        {
-            for (int h = 1; h < 7; ++h)
-            {
-                Tile t;
-                t.SetPos(pos.x + (t.GetShape().getSize().x + 10) * w, pos.y + (t.GetShape().getSize().y + 10) * h);
-                tiles.push_back(t);
-            }
-        }
+        SpawnTiles();
     }
 
     void Run()
@@ -54,6 +39,9 @@ public:
             BallTilesInteraction();
 
             Render();
+
+            if(Blacboard::isGameOver)
+                ResetGame();
         }
     }
 private:
@@ -94,12 +82,6 @@ private:
                 }
             }
 #pragma endregion
-            if (event.type == sf::Event::KeyPressed)
-                if(event.key.code == sf::Keyboard::Space)
-                    UnPause();
-            if (event.type == sf::Event::KeyPressed)
-                if(event.key.code == sf::Keyboard::F)
-                    ball.SetPos(postResPos);
         }
     }
 
@@ -115,21 +97,6 @@ private:
         // if(tiles[0].IsDestroyed() == false) window.draw(tiles[0].GetShape());
 
         window.display();
-    }
-
-    void UnPause()
-    {
-        ball.UnPause();
-        paddle.UnPause();
-        isPaused = false;
-    }
-
-    void Pause()
-    {
-        isPaused = true;
-        paddleInput = 0;
-        ball.Pause();
-        paddle.Pause();
     }
 
     void PaddleBallInteraction()
@@ -226,5 +193,32 @@ private:
                 break;
             }
         }
+    }
+
+    void SpawnTiles()
+    {
+        sf::Vector2f pos(0,0);
+
+        for (int w = 1; w < 13; ++w)
+        {
+            for (int h = 1; h < 7; ++h)
+            {
+                Tile t;
+                t.SetPos(pos.x + (t.GetShape().getSize().x + 10) * w, pos.y + (t.GetShape().getSize().y + 10) * h);
+                tiles.push_back(t);
+            }
+        }
+    }
+
+    void ResetGame()
+    {
+        paddleInput = 0;
+        paddle = Paddle();
+
+        ball = Ball();
+
+        for (auto& t:tiles) t.ResetDestroy();
+
+        Blacboard::isGameOver = false;
     }
 };
