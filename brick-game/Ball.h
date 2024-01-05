@@ -51,11 +51,13 @@ public:
     {
         velocity.y *= -1;
     }
+    sf::Vector2f GetVelocity() const
+    {
+        return velocity;
+    }
     void AddVel(const float velx, const float vely)
     {
         velocity += sf::Vector2f(velx, vely);
-
-        std::cout << velocity.x << ", " << velocity.y << std::endl;
     }
     void ReboundIfExceedBoundary(const sf::Rect<float>& rect)
     {

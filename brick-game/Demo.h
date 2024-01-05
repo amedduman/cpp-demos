@@ -57,19 +57,28 @@ public:
                     overlap, previousOverlap
                 );
 
-                // ball.SetPos(postResolutionPos);
-                postResPos = postResolutionPos;
-                // if(overlap.y > 0)
-                // {
-                //     // ball.AddVel(10, 0);
-                //     ball.ReboundX();
-                // }
-                // if(overlap.x > 0)
-                // {
-                //     ball.AddVel(0,1);
-                //     ball.ReboundY();
-                // }
-                Pause();
+                ball.SetPos(postResolutionPos);
+                if(paddle.GetShape().getPosition().y - paddle.GetShape().getSize().y / 2 > ball.GetShape().getPosition().y)
+                {
+                    ball.ReboundY();
+                }
+                else
+                {
+                    if(ball.GetVelocity().x < .1f && ball.GetVelocity().x > -.1f)
+                    {
+                         ball.AddVel(3,0);
+                    }
+                    if(ball.GetShape().getPosition().x > paddle.GetShape().getPosition().x)
+                    {
+                        if (ball.GetVelocity().x < 0)
+                            ball.ReboundX();
+                    }
+                    else
+                    {
+                        if (ball.GetVelocity().x > 0)
+                            ball.ReboundX();
+                    }
+                }
             }
 
             Render();
