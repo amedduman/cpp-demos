@@ -7,7 +7,7 @@ public:
     Paddle()
     {
         const auto pos = sf::Vector2f(350, 550);
-        auto size = sf::Vector2f(100,200);
+        auto size = sf::Vector2f(100,20);
 
         previousPos = pos;
 

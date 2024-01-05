@@ -33,8 +33,6 @@ public:
         {
             for (int h = 1; h < 7; ++h)
             {
-                if(w > 4) continue;
-                if(h>5) continue;
                 Tile t;
                 t.SetPos(pos.x + (t.GetShape().getSize().x + 10) * w, pos.y + (t.GetShape().getSize().y + 10) * h);
                 tiles.push_back(t);
