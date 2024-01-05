@@ -33,6 +33,8 @@ public:
         {
             for (int h = 1; h < 7; ++h)
             {
+                if(w > 4) continue;
+                if(h>5) continue;
                 Tile t;
                 t.SetPos(pos.x + (t.GetShape().getSize().x + 10) * w, pos.y + (t.GetShape().getSize().y + 10) * h);
                 tiles.push_back(t);
@@ -50,6 +52,7 @@ public:
 
             paddle.Move(paddleInput);
             PaddleBallInteraction();
+            BallTilesInteraction();
 
             Render();
         }
@@ -107,7 +110,10 @@ private:
 
         window.draw(paddle.GetShape());
         window.draw(ball.GetShape());
-        for (auto& t:tiles) window.draw(t.GetShape());
+        for (auto& t:tiles)
+            if(!t.IsDestroyed())
+                window.draw(t.GetShape());
+        // if(tiles[0].IsDestroyed() == false) window.draw(tiles[0].GetShape());
 
         window.display();
     }
@@ -135,7 +141,7 @@ private:
                 ball.GetShape().getPosition(), ball.GetShape().getSize()
             );
 
-        if(overlap.x > 0 && overlap.y > 0 && isPaused == false)
+        if(overlap.x > 0 && overlap.y > 0)
         {
             const auto previousOverlap = AABB::GetOverlapArea
             (
@@ -173,6 +179,52 @@ private:
                     if (ball.GetVelocity().x > 0)
                         ball.ReboundX();
                 }
+            }
+        }
+    }
+
+    void BallTilesInteraction()
+    {
+        for (auto& tile : tiles)
+        {
+            if(tile.IsDestroyed()) continue;
+            const auto overlap = AABB::GetOverlapArea
+                (
+                    tile.GetShape().getPosition(), tile.GetShape().getSize(),
+                    ball.GetShape().getPosition(), ball.GetShape().getSize()
+                );
+
+            if(overlap.x > 0 && overlap.y > 0)
+            {
+                const auto ballPos = ball.GetShape().getPosition();
+                const auto ballPrePos = ball.GetPreviousPos();
+                const auto ballSize = ball.GetShape().getSize();
+                const auto tilePos = tile.GetShape().getPosition();
+                const auto tileSize = tile.GetShape().getSize();
+
+                if (ballPrePos.y > tilePos.y + tileSize.y / 2)
+                {
+                    ball.ReboundY();
+                }
+
+                if (ballPrePos.y < tilePos.y - tileSize.y / 2)
+                {
+                    ball.ReboundY();
+                }
+                // ball is coming from left and collide with right side of thile
+                if(ball.GetPreviousPos().x > tilePos.x + tileSize.x / 2)
+                {
+                    ball.ReboundX();
+                }
+
+                // ball is coming from right and collide with left side of thile
+                if(ball.GetPreviousPos().x < tilePos.x - tileSize.x / 2)
+                {
+                    ball.ReboundX();
+                }
+
+                tile.Destroy();
+                break;
             }
         }
     }

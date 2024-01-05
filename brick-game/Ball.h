@@ -7,7 +7,7 @@ class Ball
 public:
     Ball()
     {
-        const auto pos = sf::Vector2f(300,100);
+        const auto pos = sf::Vector2f(440,160);
         const auto size = sf::Vector2f(20,10);
 
         previousPos = pos;
@@ -16,7 +16,7 @@ public:
         shape.setSize(size);
         shape.setOrigin(size.x/2, size.y/2);
 
-        velocity = sf::Vector2f(0,3);
+        velocity = sf::Vector2f(2,0);
     }
     void Move()
     {
