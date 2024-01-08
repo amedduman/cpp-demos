@@ -1,21 +1,31 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Blackboard.h"
+#include <iostream>
 
 class Cell
 {
 public:
-    Cell(const int in_width, const int in_height, const int in_horizontalRank, const int in_verticalRank, const sf::Font& font)
+    enum State
     {
-        pos = sf::Vector2i(in_horizontalRank * in_width, in_verticalRank * in_height);
-        width = in_width;
-        height = in_height;
+        Hidden,
+        Revealed,
+        Flaged,
+    };
 
-        shape = sf::RectangleShape();
-        shape.setFillColor(sf::Color::Transparent);
-        shape.setOutlineThickness(1);
-        shape.setOutlineColor(sf::Color::White);
-        shape.setSize(sf::Vector2f(in_width - 1, in_height - 1));
-        shape.setPosition(pos.x, pos.y);
+    Cell(const int in_horizontalRank, const int in_verticalRank, const sf::Font& font)
+    {
+        pos = sf::Vector2i(in_horizontalRank * width + 300, in_verticalRank * height + 150);
+        state = Hidden;
+
+        sprite.setTexture(Blackboard::tileSet);
+        sprite.setTextureRect(hiddenRect);
+        flagSprite.setTexture(Blackboard::tileSet);
+        flagSprite.setTextureRect(flagRect);
+        sprite.setPosition(pos.x, pos.y);
+        sprite.setScale(2,2);
+        flagSprite.setPosition(pos.x, pos.y);
+        flagSprite.setScale(2,2);
 
         cellNum.x = in_horizontalRank;
         cellNum.y = in_verticalRank;
@@ -24,33 +34,31 @@ public:
         cellNumText.setFont(font);
         cellNumText.setString(std::to_string(cellNum.x) + ", " + std::to_string(cellNum.y));
         cellNumText.setCharacterSize(12);
-        cellNumText.setPosition(pos.x, pos.y);
+        cellNumText.setPosition(pos.x - 25, pos.y - 25);
         cellNumText.setFillColor(sf::Color::White);
-
-        value = 0;
-
-        valueText = sf::Text();
-        valueText.setFont(font);
-        valueText.setString(std::to_string(value));
-        valueText.setCharacterSize(12);
-        valueText.setOrigin(6,6);
-        valueText.setPosition(pos.x + width / 2 , pos.y + height / 2);
-        valueText.setFillColor(sf::Color::Yellow);
     }
 
-    const sf::RectangleShape& GetShape()
+    void Draw(sf::RenderWindow& window) const
     {
-        return shape;
+        window.draw(sprite);
+        if(state == Flaged)
+            window.draw(flagSprite);
     }
 
-    const sf::Text& GetTileNumText()
+    void Reveal()
     {
-        return cellNumText;
+        state = Revealed;
+        sprite.setTextureRect(revealedRect);
     }
 
-    const sf::Text& GetTileValueText()
+    void Flag()
     {
-        return valueText;
+        state = Flaged;
+    }
+
+    State GetState() const
+    {
+        return state;
     }
 
     sf::Vector2i GetTileNum() const
@@ -58,25 +66,10 @@ public:
         return cellNum;
     }
 
-    bool IsTileIncludePoint(const sf::Vector2i& point) const
+    bool IsTileIncludePoint(const int x, const int y) const
     {
-        return point.x >= pos.x && point.x <= pos.x + width &&
-               point.y >= pos.y && point.y <= pos.y + height;
-    }
-
-    void ColorTile(const sf::Color& color)
-    {
-        shape.setFillColor(color);
-    }
-
-    void ResetTileColor()
-    {
-        shape.setFillColor(sf::Color::Transparent);
-    }
-
-    bool IsBlocked() const
-    {
-        return value == -1;
+        return x >= pos.x && x <= pos.x + sprite.getGlobalBounds().width &&
+               y >= pos.y && y <= pos.y + sprite.getGlobalBounds().height;
     }
 
     bool operator==(const Cell& other) const
@@ -90,12 +83,16 @@ public:
     }
 
 private:
-    sf::RectangleShape shape;
-    sf::Text cellNumText;
-    sf::Text valueText;
-    sf::Vector2i pos;
-    int width;
-    int height;
+    static constexpr int width = 32;
+    static constexpr int height = 32;
     sf::Vector2i cellNum;
-    int value;
+    sf::Text cellNumText;
+    State state;
+    sf::Vector2i pos;
+    sf::Sprite sprite;
+    sf::Sprite flagSprite;
+    sf::IntRect hiddenRect = sf::IntRect(32,48,16,16);
+    sf::IntRect revealedRect = sf::IntRect(0,64,16,16);
+    sf::IntRect flagRect = sf::IntRect(32,0,16,16);
+    sf::IntRect mineRect;
 };

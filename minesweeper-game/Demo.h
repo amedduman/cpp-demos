@@ -15,6 +15,12 @@ public:
     Demo()
         :window(sf::VideoMode(Blackboard::windowW, Blackboard::windowH), "Demo")
     {
+        if (!Blackboard::tileSet.loadFromFile("../minesweeper.png"))
+        {
+            std::cout << "error while loading image" << std::endl;
+        }
+        Blackboard::tileSet.setSmooth(true);
+
         if (!font.loadFromFile("../Rubik.ttf"))
         {
             std::cout << "can't load font" << std::endl;
@@ -45,18 +51,14 @@ private:
                 {
                     window.close();
                 }
-                if(event.key.code == sf::Keyboard::Escape)
-                {
-                    window.close();
-                }
-                if(event.key.code == sf::Keyboard::Space)
-                {
-                }
             }
-            if (event.type == sf::Event::KeyReleased)
-            {
+            if(event.type == sf::Event::MouseButtonPressed)
+                if (event.mouseButton.button == sf::Mouse::Left)
+                    grid.RevealCell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+            if(event.type == sf::Event::MouseButtonPressed)
+                if (event.mouseButton.button == sf::Mouse::Right)
+                    grid.FlagCell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 
-            }
         }
     }
     void Render()
