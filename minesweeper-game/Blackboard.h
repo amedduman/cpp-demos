@@ -4,6 +4,7 @@
 class Blackboard
 {
 public:
+    inline static bool IsGameOver = false;
     static sf::Font gameFont;
     inline static sf::Texture tileSet = sf::Texture();
     static constexpr int windowW = 800;

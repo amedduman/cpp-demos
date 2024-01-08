@@ -17,8 +17,8 @@ public:
     {
         pos = sf::Vector2i(in_horizontalRank * width + 300, in_verticalRank * height + 150);
         state = Hidden;
-        if(rand() % 10 < 5) hasMine = true;
 
+        if(rand() % 10 < 5) hasMine = true;
 
         flagSprite.setTexture(Blackboard::tileSet);
         flagSprite.setTextureRect(flagRect);
@@ -48,12 +48,24 @@ public:
             window.draw(flagSprite);
     }
 
-    void Reveal(int adjacentMineCount)
+    void GameEndReveal()
     {
-        adjacentMineCountText.setString(std::to_string(adjacentMineCount));
-        state = Revealed;
         if(hasMine)
             sprite.setTextureRect(mineRect);
+        else
+            sprite.setTextureRect(revealedRect);
+    }
+
+    void Reveal(const int adjacentMineCount)
+    {
+        if(adjacentMineCount != 0)
+            adjacentMineCountText.setString(std::to_string(adjacentMineCount));
+        state = Revealed;
+        if(hasMine)
+        {
+            sprite.setTextureRect(mineRect);
+            Blackboard::IsGameOver = true;
+        }
         else
             sprite.setTextureRect(revealedRect);
     }

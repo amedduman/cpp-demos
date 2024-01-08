@@ -39,6 +39,14 @@ public:
         }
     }
 
+    void RevealAllCells()
+    {
+        for (auto& cell : cells)
+        {
+            cell.GameEndReveal();
+        }
+    }
+
     void RevealCell(const int x, const int y)
     {
         for (auto& cell : cells)

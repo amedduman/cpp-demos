@@ -35,6 +35,8 @@ public:
         {
             Input();
             Render();
+            if(Blackboard::IsGameOver)
+                grid.RevealAllCells();
         }
     }
 private:
@@ -52,6 +54,8 @@ private:
                     window.close();
                 }
             }
+            if(Blackboard::IsGameOver) return;
+
             if(event.type == sf::Event::MouseButtonPressed)
                 if (event.mouseButton.button == sf::Mouse::Left)
                     grid.RevealCell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
