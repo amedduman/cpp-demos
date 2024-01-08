@@ -50,8 +50,13 @@ public:
 
     void GameEndReveal()
     {
-        if(hasMine)
-            sprite.setTextureRect(mineRect);
+        if(hasMine )
+        {
+            if(isExploded == false)
+                sprite.setTextureRect(mineRect);
+                else
+                    sprite.setTextureRect(mineExplodeRect);
+        }
         else
             sprite.setTextureRect(revealedRect);
     }
@@ -63,11 +68,17 @@ public:
         state = Revealed;
         if(hasMine)
         {
-            sprite.setTextureRect(mineRect);
+            isExploded = true;
+            sprite.setTextureRect(mineExplodeRect);
             Blackboard::IsGameOver = true;
         }
         else
             sprite.setTextureRect(revealedRect);
+    }
+
+    void Color()
+    {
+        sprite.setColor(sf::Color::Yellow);
     }
 
     void Flag()
@@ -82,7 +93,6 @@ public:
 
     bool HasMine() const
     {
-        std::cout << hasMine << std::endl;
         return hasMine;
     }
 
@@ -113,6 +123,7 @@ private:
     sf::Vector2i cellNum;
     State state;
     bool hasMine = false;
+    bool isExploded = false;
     sf::Text adjacentMineCountText;
     sf::Vector2i pos;
     sf::Sprite sprite;
@@ -121,4 +132,5 @@ private:
     sf::IntRect revealedRect = sf::IntRect(0,64,16,16);
     sf::IntRect flagRect = sf::IntRect(32,0,16,16);
     sf::IntRect mineRect = sf::IntRect(0,0,16,16);
+    sf::IntRect mineExplodeRect = sf::IntRect(48,0,16,16);
 };

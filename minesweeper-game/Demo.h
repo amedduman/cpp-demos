@@ -27,6 +27,8 @@ public:
         }
 
         grid = Grid(font);
+
+        // grid.ColorMineCells();
     }
 
     void Run()

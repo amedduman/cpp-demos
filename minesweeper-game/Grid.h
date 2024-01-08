@@ -47,6 +47,15 @@ public:
         }
     }
 
+    void ColorMineCells()
+    {
+        for (auto& cell : cells)
+        {
+            if(cell.HasMine())
+                cell.Color();
+        }
+    }
+
     void RevealCell(const int x, const int y)
     {
         for (auto& cell : cells)
@@ -72,6 +81,23 @@ public:
                 cell.Reveal(adjacentMineCount);
             }
         }
+        if(CheckForWin()) std::cout << "win" << std::endl;
+    }
+
+    bool CheckForWin() const
+    {
+        bool isWin = false;
+        for (auto& cell : cells)
+        {
+            if(cell.GetState() == Cell::Revealed || cell.HasMine())
+                isWin = true;
+            else
+            {
+                isWin = false;
+                break;
+            }
+        }
+        return isWin;
     }
 
     const Cell* TryGetCell(const sf::Vector2i num) const
