@@ -17,38 +17,45 @@ public:
     {
         pos = sf::Vector2i(in_horizontalRank * width + 300, in_verticalRank * height + 150);
         state = Hidden;
+        if(rand() % 10 < 5) hasMine = true;
+
+
+        flagSprite.setTexture(Blackboard::tileSet);
+        flagSprite.setTextureRect(flagRect);
+        flagSprite.setPosition(pos.x, pos.y);
+        flagSprite.setScale(2,2);
 
         sprite.setTexture(Blackboard::tileSet);
         sprite.setTextureRect(hiddenRect);
-        flagSprite.setTexture(Blackboard::tileSet);
-        flagSprite.setTextureRect(flagRect);
         sprite.setPosition(pos.x, pos.y);
         sprite.setScale(2,2);
-        flagSprite.setPosition(pos.x, pos.y);
-        flagSprite.setScale(2,2);
 
         cellNum.x = in_horizontalRank;
         cellNum.y = in_verticalRank;
 
-        cellNumText = sf::Text();
-        cellNumText.setFont(font);
-        cellNumText.setString(std::to_string(cellNum.x) + ", " + std::to_string(cellNum.y));
-        cellNumText.setCharacterSize(12);
-        cellNumText.setPosition(pos.x - 25, pos.y - 25);
-        cellNumText.setFillColor(sf::Color::White);
+        adjacentMineCountText = sf::Text();
+        adjacentMineCountText.setFont(font);
+        adjacentMineCountText.setCharacterSize(9);
+        adjacentMineCountText.setPosition(pos.x + 16, pos.y + 8);
+        adjacentMineCountText.setFillColor(sf::Color::White);
     }
 
     void Draw(sf::RenderWindow& window) const
     {
+        window.draw(adjacentMineCountText);
         window.draw(sprite);
         if(state == Flaged)
             window.draw(flagSprite);
     }
 
-    void Reveal()
+    void Reveal(int adjacentMineCount)
     {
+        adjacentMineCountText.setString(std::to_string(adjacentMineCount));
         state = Revealed;
-        sprite.setTextureRect(revealedRect);
+        if(hasMine)
+            sprite.setTextureRect(mineRect);
+        else
+            sprite.setTextureRect(revealedRect);
     }
 
     void Flag()
@@ -59,6 +66,12 @@ public:
     State GetState() const
     {
         return state;
+    }
+
+    bool HasMine() const
+    {
+        std::cout << hasMine << std::endl;
+        return hasMine;
     }
 
     sf::Vector2i GetTileNum() const
@@ -86,13 +99,14 @@ private:
     static constexpr int width = 32;
     static constexpr int height = 32;
     sf::Vector2i cellNum;
-    sf::Text cellNumText;
     State state;
+    bool hasMine = false;
+    sf::Text adjacentMineCountText;
     sf::Vector2i pos;
     sf::Sprite sprite;
     sf::Sprite flagSprite;
     sf::IntRect hiddenRect = sf::IntRect(32,48,16,16);
     sf::IntRect revealedRect = sf::IntRect(0,64,16,16);
     sf::IntRect flagRect = sf::IntRect(32,0,16,16);
-    sf::IntRect mineRect;
+    sf::IntRect mineRect = sf::IntRect(0,0,16,16);
 };
