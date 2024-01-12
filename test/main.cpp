@@ -1,71 +1,35 @@
-#include <iostream>
-#include<array>
+#include  <iostream>
 
-int sum(const int arr[], const int size)
+int fibonacci(int n)
 {
-    int result = 0;
-    for (int i = 0; i < size; ++i)
-    {
-        result += arr[i];
-    }
-    return result;
+    if(n <= 1) return n;
+    return fibonacci(n-1) + fibonacci(n-2);
 }
 
-int sumP(int* p, int size)
+int strToInt(char* input)
 {
-    int result = 0;
-    for (int i = 0; i < size; ++i)
+    char* inputStart = input;
+    char* inputEnd = nullptr;
+    for(; *inputStart != 0; inputStart++)
     {
-        result += p[i];
-    }
-    return result;
-}
-
-int sumPA(int* p, int size)
-{
-    int result = 0;
-    for (int i = 0; i < size; ++i)
-    {
-        result += *(p + i);
-    }
-    return result;
-}
-
-void Reverse(int* p, int size)
-{
-    int arr[size];
-
-    for (int i = size - 1; i >= 0; --i)
-    {
-        arr[(size - 1) - i]  = *(p + i);
+        inputEnd = inputStart;
     }
 
-    for (int i = 0; i < size; ++i)
+    int value = 0;
+    int factor = 1;
+    for(; inputEnd != input - 1 ;inputEnd--)
     {
-        p[i] = arr[i];
+        value += (*inputEnd - 48) * factor;
+        factor *= 10;
     }
+
+    return value;
 }
 
 int main()
 {
-    int arr[] = {1,2,3,4,5,6,7};
-    int size = std::end(arr)-std::begin(arr);
-
-    std::cout << sum(arr, size) << std::endl;
-    std::cout << sumP(arr, size) << std::endl;
-    std::cout << sumPA(arr, size) << std::endl;
-
-    for (int i = 0; i < size; ++i)
-    {
-        std::cout << arr[i];
-    }
-    std::cout<< std::endl;
-    std::cout<< "Reversed: " << std::endl;
-
-    Reverse(arr, size);
-
-    for (int i = 0; i < size; ++i)
-    {
-        std::cout << arr[i];
-    }
+    char input[3];
+    std::cin >> input;
+    int n = strToInt(input);
+    std::cout << fibonacci(n);
 }
