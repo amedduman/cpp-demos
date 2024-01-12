@@ -1,35 +1,89 @@
-#include  <iostream>
+#include <iostream>
+#include <vector>
+#include <fstream>
 
-int fibonacci(int n)
+struct Data
 {
-    if(n <= 1) return n;
-    return fibonacci(n-1) + fibonacci(n-2);
-}
+    std::string name;
+    int value;
 
-int strToInt(char* input)
-{
-    char* inputStart = input;
-    char* inputEnd = nullptr;
-    for(; *inputStart != 0; inputStart++)
+    Data(std::string in_name, int in_value)
     {
-        inputEnd = inputStart;
+        name = in_name;
+        value = in_value;
     }
-
-    int value = 0;
-    int factor = 1;
-    for(; inputEnd != input - 1 ;inputEnd--)
-    {
-        value += (*inputEnd - 48) * factor;
-        factor *= 10;
-    }
-
-    return value;
-}
+};
 
 int main()
 {
-    char input[3];
-    std::cin >> input;
-    int n = strToInt(input);
-    std::cout << fibonacci(n);
+    using namespace std;
+
+    std::vector<Data> dataVector;
+
+    ofstream outputFile("data.txt", ios::app);
+    outputFile << "my name" << " " << 123 << endl;
+
+
+    while (true)
+    {
+        cout << "load save add quit print" << endl;
+
+        char command;
+        cin >> command;
+
+        Data data("no name", -1);
+
+        switch (command)
+        {
+        case 'l':
+            cout << "LOAD SELECTED" << endl;
+
+            break;
+        case 's':
+            cout << "SAVE SELECTED" << endl;
+
+            for(auto& d : dataVector)
+            {
+                outputFile << "Name: " << d.name << endl;
+                outputFile << "Value " << d.value << endl;
+            }
+
+            break;
+#pragma region
+        case 'a':
+            cout << "ADD SELECTED" << endl;
+
+            cout << "enter a name: ";
+            cin >> data.name;
+
+            cout << "enter a value: ";
+            cin >> data.value;
+
+            dataVector.push_back(data);
+            break;
+#pragma endregion
+#pragma region
+        case 'p':
+            cout << "PRINT SELECTED" << endl;
+
+            for(auto& d : dataVector)
+            {
+                cout << "Name: " << d.name << endl;
+                cout << "Value " << d.value << endl;
+            }
+            break;
+#pragma endregion
+#pragma region
+        case 'q':
+            return 0;
+            break;
+#pragma endregion
+#pragma region
+        default:
+            cout << "command is not recognized" << endl;
+            break;
+#pragma endregion
+        }
+    }
+
 }
