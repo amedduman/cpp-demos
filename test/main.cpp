@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <sstream>
+#include <string>
 
 struct Data
 {
@@ -19,9 +21,7 @@ int main()
     using namespace std;
 
     std::vector<Data> dataVector;
-
-    ofstream outputFile("data.txt", ios::app);
-    outputFile << "my name" << " " << 123 << endl;
+    ofstream outputFile("data.txt");
 
 
     while (true)
@@ -36,20 +36,42 @@ int main()
         switch (command)
         {
         case 'l':
-            cout << "LOAD SELECTED" << endl;
+            {
+                cout << "LOAD SELECTED" << endl;
 
+                std::ifstream inputFile("data.txt");
+                // Check if the file is successfully opened
+                if (inputFile.is_open())
+                {
+                    std::string line;
+
+                    // Read and print each line from the file
+                    while (std::getline(inputFile, line))
+                    {
+                        std::istringstream inputStream(line);
+
+                        std::string name;
+                        int age;
+
+                        std::getline(inputStream, name, ',');
+                        inputStream >> age;
+
+                        std::cout << "Name: " << name << std::endl;
+                        std::cout << "Age: " << age << std::endl;
+                    }
+                }
+            }
             break;
         case 's':
             cout << "SAVE SELECTED" << endl;
 
             for(auto& d : dataVector)
             {
-                outputFile << "Name: " << d.name << endl;
-                outputFile << "Value " << d.value << endl;
+                outputFile << d.name << ",";
+                outputFile << d.value << endl;
             }
 
             break;
-#pragma region
         case 'a':
             cout << "ADD SELECTED" << endl;
 
@@ -61,8 +83,6 @@ int main()
 
             dataVector.push_back(data);
             break;
-#pragma endregion
-#pragma region
         case 'p':
             cout << "PRINT SELECTED" << endl;
 
@@ -72,17 +92,12 @@ int main()
                 cout << "Value " << d.value << endl;
             }
             break;
-#pragma endregion
-#pragma region
         case 'q':
             return 0;
             break;
-#pragma endregion
-#pragma region
         default:
             cout << "command is not recognized" << endl;
             break;
-#pragma endregion
         }
     }
 
