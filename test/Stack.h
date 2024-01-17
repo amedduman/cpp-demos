@@ -45,45 +45,63 @@ class Stack
 {
 public:
     Stack() = default;
-    Stack (const Stack& t)
+    Stack (const Stack& source)
     {
-
         std::cout << "Copy constructor called " << std::endl;
+
+        if(source.topElementPointer != nullptr)
+        {
+            auto p = source.topElementPointer;
+            while (p != nullptr)
+            {
+                // std::cout << p->GetValue() << std::endl;
+                if(topElementPointer == nullptr)
+                {
+                    topElementPointer = new Element(p->GetValue());
+                }
+                else
+                {
+                    const auto newTop = new Element(p->GetValue(), topElementPointer);;
+                    topElementPointer = newTop;
+                }
+                p = p->GetPreviousElement();
+            }
+        }
     }
     void Push(const int value)
     {
-        if(pTop == nullptr)
+        if(topElementPointer == nullptr)
         {
-            pTop = new Element(value);
+            topElementPointer = new Element(value);
         }
         else
         {
-            const auto newTop = new Element(value, pTop);;
-            pTop = newTop;
+            const auto newTop = new Element(value, topElementPointer);;
+            topElementPointer = newTop;
         }
     }
     ~Stack()
     {
-        delete pTop;
+        delete topElementPointer;
     }
     int Pop()
     {
-        if(pTop == nullptr) return -1;
-        const int value = pTop->GetValue();
+        if(topElementPointer == nullptr) return -1;
+        const int value = topElementPointer->GetValue();
 
-        const auto pr = pTop->GetPreviousElement();
-        pTop->Disconnect();
-        delete pTop;
-        pTop = pr;
+        const auto pr = topElementPointer->GetPreviousElement();
+        topElementPointer->Disconnect();
+        delete topElementPointer;
+        topElementPointer = pr;
 
         return value;
 
     }
     void Print() const
     {
-        if(pTop == nullptr) return;
-        pTop->Print();
+        if(topElementPointer == nullptr) return;
+        topElementPointer->Print();
     }
 private:
-    Element* pTop = nullptr;
+    Element* topElementPointer = nullptr;
 };

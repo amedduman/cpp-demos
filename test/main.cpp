@@ -12,7 +12,9 @@ int main()
     s.Push(3);
     s.Push(4);
 
-    s.Print();
+    // s.Print();
 
     Stack s2 = s;
+
+    s2.Print();
 }
