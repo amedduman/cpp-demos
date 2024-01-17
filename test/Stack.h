@@ -8,15 +8,15 @@ public:
     explicit Element(const int in_value, Element* in_pNext = nullptr)
     {
         value = in_value;
-        pPr = in_pNext;
+        previousElementPointer = in_pNext;
     }
     ~Element()
     {
-        delete pPr;
+        delete previousElementPointer;
     }
     [[nodiscard]] Element* GetPreviousElement() const
     {
-        return pPr;
+        return previousElementPointer;
     }
     [[nodiscard]] int GetValue() const
     {
@@ -28,17 +28,17 @@ public:
     }
     void Disconnect()
     {
-        pPr = nullptr;
+        previousElementPointer = nullptr;
     }
     void Print() const
     {
         std::cout << value << std::endl;
-        if(pPr != nullptr)
-            pPr->Print();
+        if(previousElementPointer != nullptr)
+            previousElementPointer->Print();
     }
 private:
     int value = 0;
-    Element* pPr = nullptr;
+    Element* previousElementPointer = nullptr;
 };
 
 class Stack
@@ -47,40 +47,41 @@ public:
     Stack() = default;
     Stack (const Stack& source)
     {
-        std::cout << "Copy constructor called " << std::endl;
-
-        if(source.topElementPointer != nullptr)
+        // std::cout << "Copy constructor called " << std::endl;
+        *this = source;
+    }
+    Stack& operator= (const Stack& source)
+    {
+        if(source.topElementPointer != nullptr && &source != this)
         {
-            // const int sourceSize = source.GetSize();
-            int sourceSize = 4;
+            delete topElementPointer; // in case we have any data in the one we wanna we copy over
+
+            const int sourceSize = source.GetSize();
             int size = 0;
             auto p = source.topElementPointer;
             while (p != nullptr)
             {
+                auto pLocal = source.topElementPointer;
+                for (int i = 0; i < sourceSize - 1 - size; ++i)
+                {
+                    pLocal = pLocal->GetPreviousElement();
+                }
+
                 if(topElementPointer == nullptr)
                 {
-                    auto pLocal = source.topElementPointer;
-                    for (int i = 0; i < sourceSize -1 - size; ++i)
-                    {
-                        pLocal = pLocal->GetPreviousElement();
-                    }
-
                     topElementPointer = new Element(pLocal->GetValue());
                 }
                 else
                 {
-                    auto pLocal2 = source.topElementPointer;
-                    for (int i = 0; i < sourceSize - 1 - size; ++i)
-                    {
-                        pLocal2 = pLocal2->GetPreviousElement();
-                    }
-                    const auto newTop = new Element(pLocal2->GetValue(), topElementPointer);;
+                    const auto newTop = new Element(pLocal->GetValue(), topElementPointer);;
                     topElementPointer = newTop;
                 }
+
                 p = p->GetPreviousElement();
                 size++;
             }
         }
+        return *this;
     }
     ~Stack()
     {
@@ -117,13 +118,17 @@ public:
         if(topElementPointer == nullptr) return -1;
         const int value = topElementPointer->GetValue();
 
-        const auto pr = topElementPointer->GetPreviousElement();
+        const auto previousElement = topElementPointer->GetPreviousElement();
         topElementPointer->Disconnect();
         delete topElementPointer;
-        topElementPointer = pr;
+        topElementPointer = previousElement;
 
         return value;
 
+    }
+    [[nodiscard]] bool Empty() const
+    {
+        return topElementPointer == nullptr;
     }
     void Print() const
     {
