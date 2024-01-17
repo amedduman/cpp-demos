@@ -51,22 +51,40 @@ public:
 
         if(source.topElementPointer != nullptr)
         {
+            // const int sourceSize = source.GetSize();
+            int sourceSize = 4;
+            int size = 0;
             auto p = source.topElementPointer;
             while (p != nullptr)
             {
-                // std::cout << p->GetValue() << std::endl;
                 if(topElementPointer == nullptr)
                 {
-                    topElementPointer = new Element(p->GetValue());
+                    auto pLocal = source.topElementPointer;
+                    for (int i = 0; i < sourceSize -1 - size; ++i)
+                    {
+                        pLocal = pLocal->GetPreviousElement();
+                    }
+
+                    topElementPointer = new Element(pLocal->GetValue());
                 }
                 else
                 {
-                    const auto newTop = new Element(p->GetValue(), topElementPointer);;
+                    auto pLocal2 = source.topElementPointer;
+                    for (int i = 0; i < sourceSize - 1 - size; ++i)
+                    {
+                        pLocal2 = pLocal2->GetPreviousElement();
+                    }
+                    const auto newTop = new Element(pLocal2->GetValue(), topElementPointer);;
                     topElementPointer = newTop;
                 }
                 p = p->GetPreviousElement();
+                size++;
             }
         }
+    }
+    ~Stack()
+    {
+        delete topElementPointer;
     }
     void Push(const int value)
     {
@@ -80,9 +98,19 @@ public:
             topElementPointer = newTop;
         }
     }
-    ~Stack()
+    [[nodiscard]] int GetSize() const
     {
-        delete topElementPointer;
+        if(topElementPointer == nullptr) return 0;
+
+        int size = 0;
+        auto p = topElementPointer;
+        while (p != nullptr)
+        {
+            p = p->GetPreviousElement();
+            size++;
+        }
+
+        return size;
     }
     int Pop()
     {
