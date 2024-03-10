@@ -1,18 +1,37 @@
-#include <iostream>
+#include <stdlib.h>
+
 #include <SDL2/SDL.h>
 
-int main()
+#define WINDOW_WIDTH 600
+
+int main(void) 
 {
-  if (SDL_Init(SDL_INIT_EVERYTHING) > 0)
-  {
-    std::cout << "SDL_Init failed with error: " << SDL_GetError() << std::endl;
-    return EXIT_FAILURE;
-  }
+    SDL_Event event;
+    SDL_Renderer *renderer;
+    SDL_Window *window;
 
-  std::string greetings = "Hello SDL2!";
-  std::cout << greetings << std::endl;
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_WIDTH, 0, &window, &renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
-  SDL_Quit();
+    for (int i = 0; i < WINDOW_WIDTH; ++i)
+    {
+        SDL_RenderDrawPoint(renderer, i, i);
+    }
 
-  return EXIT_SUCCESS;
+    SDL_RenderPresent(renderer);
+
+    while (1) 
+    {
+        if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
+            break;
+    }
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
+    return EXIT_SUCCESS;
 }
