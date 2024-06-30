@@ -34,6 +34,7 @@
 #ide folders
 *.idea
 *.vscode
+!/sfml-starter-for-vscode/.vscode
 
 #build-folders
 **/cmake-build-debug
